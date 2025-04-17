@@ -12,83 +12,55 @@ import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar
 
-
 class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
     private val TAG = AlarmManagerImpl::class.simpleName
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
-    override fun schedule(schedule: Schedule) {
 
+    override fun schedule(schedule: Schedule) {
+        val intent = Intent(context, AlarmReminderBroadcastCast::class.java).apply {
+            putExtra("schedule_data", schedule)
+        }
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            schedule.id.hashCode(),
-            Intent(context, AlarmReminderBroadcastCast::class.java).apply {
-                when (schedule) {
-                    is Schedule.ScheduleDay -> {
-                        putExtra("schedule_data", schedule)
-                    }
-
-                    is Schedule.ScheduleWeek -> {
-                        putExtra("schedule_data", schedule)
-                    }
-
-                    is Schedule.ScheduleMonth -> {
-                        putExtra("schedule_data", schedule)
-                    }
-
-                    is Schedule.ScheduleEachDay ->{
-                        putExtra("schedule_data", schedule)
-                    }
-                }
-            },
+            schedule.id,
+            intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
+
         when (schedule) {
             is Schedule.ScheduleEachDay -> {
-                schedule.intervals.forEach { dayOffset ->
-                    val calendar = Calendar.getInstance().apply {
-                        timeInMillis = schedule.createdAt
-                        add(Calendar.DAY_OF_YEAR, dayOffset)
-                        set(Calendar.HOUR_OF_DAY, getHourDay(schedule.hour, schedule.units))
-                        set(Calendar.MINUTE, schedule.minute)
-                        set(Calendar.SECOND, 0)
-                    }
+                val dayOffset = schedule.intervals
+                val calendar = Calendar.getInstance().apply {
+                    timeInMillis = schedule.createdAt
+                    add(Calendar.DAY_OF_YEAR, dayOffset)
+                    set(Calendar.HOUR_OF_DAY, getHourDay(schedule.hour, schedule.units))
+                    set(Calendar.MINUTE, schedule.minute)
+                    set(Calendar.SECOND, 0)
+                }
 
-                    val intervalId = generateUniqueId(schedule.plantId, dayOffset, calendar.timeInMillis)
-                    val intent = Intent(context, AlarmReminderBroadcastCast::class.java).apply {
-                        putExtra("schedule_data", schedule.copy(id = intervalId)) // 🔄 copy để đổi ID
-                    }
-
-                    val intervalPendingIntent = PendingIntent.getBroadcast(
-                        context,
-                        intervalId.hashCode(),
-                        intent,
-                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        if (alarmManager.canScheduleExactAlarms()) {
-                            alarmManager.setExactAndAllowWhileIdle(
-                                AlarmManager.RTC_WAKEUP,
-                                calendar.timeInMillis,
-                                intervalPendingIntent
-                            )
-                        } else {
-                            alarmManager.set(
-                                AlarmManager.RTC_WAKEUP,
-                                calendar.timeInMillis,
-                                intervalPendingIntent
-                            )
-                        }
-                    } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (alarmManager.canScheduleExactAlarms()) {
                         alarmManager.setExactAndAllowWhileIdle(
                             AlarmManager.RTC_WAKEUP,
                             calendar.timeInMillis,
-                            intervalPendingIntent
+                            pendingIntent
+                        )
+                    } else {
+                        alarmManager.set(
+                            AlarmManager.RTC_WAKEUP,
+                            calendar.timeInMillis,
+                            pendingIntent
                         )
                     }
-
-                    Log.e(TAG, "ScheduleEachDay: Set reminder at ${calendar.timeInMillis.longToDateString("dd/MM/yy HH:mm")} (after $dayOffset days)")
+                } else {
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
                 }
+
+                Log.e(TAG, "ScheduleEachDay: Set reminder at ${calendar.timeInMillis.longToDateString("dd/MM/yy HH:mm")} (after $dayOffset days)")
             }
 
             is Schedule.ScheduleDay -> {
@@ -99,7 +71,7 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
                 alarmManager.setAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent
                 )
-                Log.e(TAG, "ScheduleDay:  ${calendar.timeInMillis.longToDateString("dd/MM/yy  HH:mm")} ${schedule.hour} : ${schedule.minute}")
+                Log.e(TAG, "ScheduleDay: ${calendar.timeInMillis.longToDateString("dd/MM/yy HH:mm")} ${schedule.hour} : ${schedule.minute}")
             }
 
             is Schedule.ScheduleWeek -> {
@@ -108,10 +80,7 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
                     calendar.set(Calendar.DAY_OF_WEEK, schedule.dayOfWeek)
                 } catch (_: Exception) {
                 }
-                calendar.set(
-                    Calendar.HOUR_OF_DAY,
-                    getHourDay(schedule.hour, schedule.units)
-                )
+                calendar.set(Calendar.HOUR_OF_DAY, getHourDay(schedule.hour, schedule.units))
                 calendar.set(Calendar.MINUTE, schedule.minute)
                 calendar.set(Calendar.SECOND, 0)
                 alarmManager.setAndAllowWhileIdle(
@@ -121,13 +90,11 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
                 )
                 Log.e(
                     TAG,
-                    "ScheduleWeek: ${getCurrentWeek()}  ${
-                        getWeekOfYearUsingCalendar(schedule.time)
-                    }",
+                    "ScheduleWeek: ${getCurrentWeek()} ${getWeekOfYearUsingCalendar(schedule.time)}"
                 )
                 Log.e(
                     TAG,
-                    "ScheduleWeek: ${calendar.timeInMillis.longToDateString("dd/MM/yy  HH:mm")}  ${schedule.hour} : ${schedule.minute} "
+                    "ScheduleWeek: ${calendar.timeInMillis.longToDateString("dd/MM/yy HH:mm")} ${schedule.hour} : ${schedule.minute}"
                 )
             }
 
@@ -162,9 +129,8 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
                     }
 
                     Calendar.FEBRUARY -> {
-                        val cal: GregorianCalendar =
-                            GregorianCalendar.getInstance() as GregorianCalendar
-                        if (cal.isLeapYear(calendar.get(Calendar.YEAR))) { //for leap year feburary month
+                        val cal: GregorianCalendar = GregorianCalendar.getInstance() as GregorianCalendar
+                        if (cal.isLeapYear(calendar.get(Calendar.YEAR))) {
                             if (calendar.timeInMillis < System.currentTimeMillis()) {
                                 calendar.add(Calendar.DATE, 29)
                             }
@@ -173,7 +139,7 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
                                 calendar.timeInMillis,
                                 pendingIntent
                             )
-                        } else { //for non leap year feburary month
+                        } else {
                             if (calendar.timeInMillis < System.currentTimeMillis()) {
                                 calendar.add(Calendar.DATE, 28)
                             }
@@ -185,20 +151,11 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
                         }
                     }
                 }
-                Log.e(TAG, "ScheduleMonth:  ${calendar.timeInMillis.longToDateString("dd/MM/yy  HH:mm")}  ${schedule.hour} : ${schedule.minute}")
+                Log.e(TAG, "ScheduleMonth: ${calendar.timeInMillis.longToDateString("dd/MM/yy HH:mm")} ${schedule.hour} : ${schedule.minute}")
             }
         }
-
     }
 
-    fun generateUniqueId(
-        plantId: Int,
-        dayOffset: Int,
-        baseTime: Long = System.currentTimeMillis()
-    ): Int {
-        val raw = "${plantId}_${dayOffset}_$baseTime"
-        return raw.hashCode()
-    }
     private fun getHourDay(hour: Int, unit: Int): Int {
         return if (unit == Constants.TimeUnit.AM) {
             hour
@@ -208,13 +165,8 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
     }
 
     private fun getWeekOfYearUsingCalendar(timeInMillis: Long): Int {
-        // Create a Calendar instance
         val calendar = Calendar.getInstance()
-
-        // Set the calendar time to the provided timestamp
         calendar.time = Date(timeInMillis)
-
-        // Get the week of year
         return calendar.get(Calendar.WEEK_OF_YEAR)
     }
 
@@ -226,7 +178,7 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
         alarmManager.cancel(
             PendingIntent.getBroadcast(
                 context,
-                schedule.id.toInt(),
+                schedule.id,
                 Intent(context, AlarmReminderBroadcastCast::class.java),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )

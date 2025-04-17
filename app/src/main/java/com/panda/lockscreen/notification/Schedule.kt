@@ -7,10 +7,9 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 sealed class Schedule(
     open var id: Int,
-    open val plantId: Int,
-    open val plantThumb: String,
-    open val plantName: String,
-    open val about: Int,
+    open val titleId: Int,
+    open val subTitleId: Int,
+    open val imageId: Int,
     open val repeatTimes: Int,
     open val hour: Int,
     open val minute: Int,
@@ -20,23 +19,21 @@ sealed class Schedule(
     @Parcelize
     data class ScheduleEachDay(
         override var id: Int,
-        override var plantId: Int,
-        override val plantThumb: String,
-        override val plantName: String,
-        override val about: Int,
+        override val titleId: Int,
+        override val subTitleId: Int,
+        override val imageId: Int,
         override val repeatTimes: Int,
         override val hour: Int,
         override val minute: Int,
         override val units: Int,
         @DrawableRes override var imageBackup: Int? = null,
-        val intervals: List<Int>, // ✅ các mốc ngày sau (vd: [3, 7, 10])
+        val intervals: Int, // ✅ các mốc ngày sau (vd: [3, 7, 10])
         val createdAt: Long = System.currentTimeMillis() // ✅ ngày bắt đầu (mốc tính)
     ) : Schedule(
         id,
-        plantId,
-        plantThumb,
-        plantName,
-        about,
+        titleId,
+        subTitleId,
+        imageId,
         repeatTimes,
         hour,
         minute,
@@ -46,23 +43,21 @@ sealed class Schedule(
     @Parcelize
     data class ScheduleDay(
         override var id: Int,
-        override var plantId: Int,
-        override val plantThumb: String,
-        override val plantName: String,
-        override val about: Int,
+        override val titleId: Int,
+        override val subTitleId: Int,
+        override val imageId: Int,
         override val repeatTimes: Int,
-        override val hour: Int,
-        override val minute: Int,
-        override val units: Int,
+        override val hour: Int=0,
+        override val minute: Int=0,
+        override val units: Int=0,
         @DrawableRes override var imageBackup: Int? = null,
         val time: Long,
     ) :
         Schedule(
             id,
-            plantId,
-            plantThumb,
-            plantName,
-            about,
+            titleId,
+            subTitleId,
+            imageId,
             repeatTimes,
             hour,
             minute,
@@ -73,10 +68,9 @@ sealed class Schedule(
     @Parcelize
     data class ScheduleWeek(
         override var id: Int,
-        override var plantId: Int,
-        override val plantThumb: String,
-        override val plantName: String,
-        override val about: Int,
+        override val titleId: Int,
+        override val subTitleId: Int,
+        override val imageId: Int,
         override val repeatTimes: Int,
         override val hour: Int,
         override val minute: Int,
@@ -87,10 +81,9 @@ sealed class Schedule(
     ) :
         Schedule(
             id,
-            plantId,
-            plantThumb,
-            plantName,
-            about,
+            titleId,
+            subTitleId,
+            imageId,
             repeatTimes,
             hour,
             minute,
@@ -101,10 +94,9 @@ sealed class Schedule(
     @Parcelize
     data class ScheduleMonth(
         override var id: Int,
-        override var plantId: Int,
-        override val plantThumb: String,
-        override val plantName: String,
-        override val about: Int,
+        override val titleId: Int,
+        override val subTitleId: Int,
+        override val imageId: Int,
         override val repeatTimes: Int,
         override val hour: Int,
         override val minute: Int,
@@ -115,10 +107,9 @@ sealed class Schedule(
     ) :
         Schedule(
             id,
-            plantId,
-            plantThumb,
-            plantName,
-            about,
+            titleId,
+            subTitleId,
+            imageId,
             repeatTimes,
             hour,
             minute,

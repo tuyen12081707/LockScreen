@@ -27,12 +27,12 @@ class FullscreenReminderActivity : AppCompatActivity() {
         } else {
             intent.getParcelableExtra("schedule_data")
         }
-//        binding.tvTitle.text = getString(reminderType.titleResId)
-//        binding.tvSubTitle.text = getString(reminderType.subtitleResId)
-//        binding.tvSubTitle.text = getString(reminderType.subtitleResId)
-//        binding.imgAddPhoto.setImageResource(reminderType.imageId)
-//        binding.imgAddPhoto.setImageResource(reminderType.imageId)
-//        binding.btnOpenApp.text = getString(reminderType.buttonId)
+        schedule?.let {
+            binding.tvTitle.text = getString(it.titleId)
+            binding.tvSubTitle.text = getString(it.subTitleId)
+            binding.imgAddPhoto.setImageResource(it.imageId)
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +40,16 @@ class FullscreenReminderActivity : AppCompatActivity() {
         binding = ActivityFullScreenReminderBinding.inflate(layoutInflater)
         setContentView(binding.root)
         Log.d("FullScreenReminderReceiver", "onCreate")
-
+        schedule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("schedule_data", Schedule::class.java)
+        } else {
+            intent.getParcelableExtra("schedule_data")
+        }
+        schedule?.let {
+            binding.tvTitle.text = getString(it.titleId)
+            binding.tvSubTitle.text = getString(it.subTitleId)
+            binding.imgAddPhoto.setImageResource(it.imageId)
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
@@ -51,16 +60,8 @@ class FullscreenReminderActivity : AppCompatActivity() {
             )
         }
 
-//        binding.tvTitle.text = getString(schedule.titleResId)
-//        binding.tvSubTitle.text = getString(schedule.subtitleResId)
-//        binding.tvSubTitle.text = getString(schedule.subtitleResId)
-//        binding.imgAddPhoto.setImageResource(schedule.imageId)
-//        binding.imgAddPhoto.setImageResource(schedule.imageId)
-//        binding.btnOpenApp.text = getString(schedule.buttonId)
         val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            keyguardManager.requestDismissKeyguard(this, null)
-        }
+        keyguardManager.requestDismissKeyguard(this, null)
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

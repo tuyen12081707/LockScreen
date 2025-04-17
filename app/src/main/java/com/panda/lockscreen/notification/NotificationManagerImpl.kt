@@ -77,8 +77,8 @@ class NotificationManagerImpl(private val context: Context,private val schedule:
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_app)
-            .setContentTitle("LockScreen title") // Lấy title từ tài nguyên
-            .setContentText("LockScreen content") // Lấy subtitle từ tài nguyên
+            .setContentTitle(context.getString(schedule.titleId))
+            .setContentText(context.getString(schedule.subTitleId)) 
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_CALL) // Đặt category là CATEGORY_CALL
             .setFullScreenIntent(pendingIntent, true)

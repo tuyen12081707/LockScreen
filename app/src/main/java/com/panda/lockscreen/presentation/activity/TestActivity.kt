@@ -17,6 +17,7 @@ import com.panda.lockscreen.R
 import com.panda.lockscreen.notification.Schedule
 import com.panda.lockscreen.presentation.viewmodel.ReminderViewModel
 import com.panda.lockscreen.utils.Constants
+import com.panda.lockscreen.utils.createDailyReminderSchedule
 import org.koin.android.scope.getOrCreateScope
 import org.koin.core.scope.Scope
 import java.util.Calendar
@@ -50,30 +51,33 @@ class TestActivity : AppCompatActivity() {
 
         } else {
             notificationLauncher?.let {
-                requestNotification(this,it)
+                requestNotification(this, it)
             }
         }
     }
+
     fun requestNotification(
         context: Context,
         mLauncher: ActivityResultLauncher<String>
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+ (API 33)
-            if (context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            if (context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 mLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
     }
+
     private fun isNotificationPermissionGranted(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             doWeHavePermissionFor(
                 this,
-                android.Manifest.permission.POST_NOTIFICATIONS
+                Manifest.permission.POST_NOTIFICATIONS
             )
         } else {
             true
         }
     }
+
     fun doWeHavePermissionFor(context: Context, vararg permissions: String): Boolean {
         permissions.forEach {
             if (ContextCompat.checkSelfPermission(context, it) !=
@@ -82,41 +86,38 @@ class TestActivity : AppCompatActivity() {
         }
         return true
     }
+
     private fun handleInsertViewModel() {
+        val interValstring = "1,3,5,7"
+        val intervals = interValstring.split(",").map { it.trim().toInt() }
 
-        val intervals = listOf(3, 7, 10, 20) // các mốc ngày nhắc
-
-        val currentTime = System.currentTimeMillis()
-        val calendar = Calendar.getInstance()
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minute = calendar.get(Calendar.MINUTE)
-
-        val schedule = Schedule.ScheduleEachDay(
-            id = generateUniqueId(
-                plantId = 1,
-                dayOffset = intervals.first(),
-                baseTime = currentTime
-            ),
-            plantId = 1,
-            plantThumb = "your_image_url",
-            plantName = "Aloe Vera",
-            about = Constants.RemindAbout.WATERING,
-            repeatTimes = intervals.size,
-            hour = hour % 12,
-            minute = minute,
-            units = if (hour < 12) Constants.TimeUnit.AM else Constants.TimeUnit.PM,
-            intervals = intervals,
-            createdAt = currentTime
+        val titleIds = listOf(
+            R.string.reminder_title_1,
+            R.string.reminder_title_2,
+            R.string.reminder_title_3,
+            R.string.reminder_title_4
         )
-        viewModel.setReminder(this,schedule)
+        val subTitleIds = listOf(
+            R.string.reminder_subtitle_1,
+            R.string.reminder_subtitle_2,
+            R.string.reminder_subtitle_3,
+            R.string.reminder_subtitle_4
+        )
+        val imageIds =
+            listOf(
+                R.drawable.img_reminder,
+                R.drawable.img_reminder,
+                R.drawable.img_reminder,
+                R.drawable.img_reminder
+            )
+        viewModel.setupReminders(
+            context = this,
+            intervals = intervals,
+            titleIds = titleIds,
+            subTitleIds = subTitleIds,
+            imageIds = imageIds
+        )
     }
 
-    fun generateUniqueId(
-        plantId: Int,
-        dayOffset: Int,
-        baseTime: Long = System.currentTimeMillis()
-    ): Int {
-        val raw = "${plantId}_${dayOffset}_$baseTime"
-        return raw.hashCode()
-    }
+
 }
