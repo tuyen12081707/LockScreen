@@ -115,7 +115,8 @@ class TestActivity : AppCompatActivity() {
             intervals = intervals,
             titleIds = titleIds,
             subTitleIds = subTitleIds,
-            imageIds = imageIds
+            imageIds = imageIds,
+            isPresent = true
         )
     }
 
