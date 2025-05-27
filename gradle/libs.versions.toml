@@ -1,7 +1,10 @@
 [versions]
-agp = "8.9.1"
+agp = "8.7.2"
+firebaseAnalytics = "22.4.0"
+firebaseBom = "33.14.0"
+glide = "4.16.0"
 kotlin = "2.0.21"
-coreKtx = "1.15.0"
+coreKtx = "1.12.0"
 junit = "4.14-SNAPSHOT"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
@@ -13,10 +16,16 @@ ksp = "2.0.0-1.0.24"
 roomRuntime = "2.6.1"
 datastore = "1.1.1"
 koin = "3.5.3"
+googleGmsGoogleServices = "4.4.2"
+firebaseConfig = "22.1.2"
 
 [libraries]
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+google-firebase-analytics = { module = "com.google.firebase:firebase-analytics", version.ref = "firebaseAnalytics" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -34,8 +43,10 @@ androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "d
 koin-core = {module="io.insert-koin:koin-core",version.ref="koin"}
 koin-andorid = {module="io.insert-koin:koin-android",version.ref="koin"}
 koin-navigation = {module="io.insert-koin:koin-androidx-navigation",version.ref="koin"}
+firebase-config = { group = "com.google.firebase", name = "firebase-config", version.ref = "firebaseConfig" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
 google-ksp = { id = "com.google.devtools.ksp", version.ref ="ksp" }
+google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }

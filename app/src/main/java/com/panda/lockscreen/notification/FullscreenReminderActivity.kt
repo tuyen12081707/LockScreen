@@ -3,17 +3,22 @@ package com.panda.lockscreen.notification
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.panda.lockscreen.databinding.ActivityFullScreenReminderBinding
 import com.panda.lockscreen.presentation.activity.TestActivity
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
+import androidx.core.net.toUri
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 
 class FullscreenReminderActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFullScreenReminderBinding
@@ -27,12 +32,7 @@ class FullscreenReminderActivity : AppCompatActivity() {
         } else {
             intent.getParcelableExtra("schedule_data")
         }
-        schedule?.let {
-            binding.tvTitle.text = getString(it.titleId)
-            binding.tvSubTitle.text = getString(it.subTitleId)
-            binding.imgAddPhoto.setImageResource(it.imageId)
-        }
-
+        handleNewIntent()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,16 +40,7 @@ class FullscreenReminderActivity : AppCompatActivity() {
         binding = ActivityFullScreenReminderBinding.inflate(layoutInflater)
         setContentView(binding.root)
         Log.d("FullScreenReminderReceiver", "onCreate")
-        schedule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra("schedule_data", Schedule::class.java)
-        } else {
-            intent.getParcelableExtra("schedule_data")
-        }
-        schedule?.let {
-            binding.tvTitle.text = getString(it.titleId)
-            binding.tvSubTitle.text = getString(it.subTitleId)
-            binding.imgAddPhoto.setImageResource(it.imageId)
-        }
+        handleNewIntent()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
@@ -61,7 +52,9 @@ class FullscreenReminderActivity : AppCompatActivity() {
         }
 
         val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-        keyguardManager.requestDismissKeyguard(this, null)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            keyguardManager.requestDismissKeyguard(this, null)
+        }
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -82,6 +75,23 @@ class FullscreenReminderActivity : AppCompatActivity() {
 
         binding.icBtnClose.setOnClickListener {
             finishAffinity()
+        }
+    }
+
+    private fun handleNewIntent() {
+        schedule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("schedule_data", Schedule::class.java)
+        } else {
+            intent.getParcelableExtra("schedule_data")
+        }
+        schedule?.let {
+            binding.tvTitle.text = it.title
+            binding.tvSubTitle.text = it.content
+            val imageUrl = it.imageUrl.trim().toUri()
+            Glide.with(binding.imgAddPhoto)
+                .load(imageUrl)
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
+                .into(binding.imgAddPhoto)
         }
     }
 

@@ -13,21 +13,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.panda.lockscreen.R
+import com.panda.lockscreen.data.model.LockScreen
+import com.panda.lockscreen.data.prefernces.AppConfigManager
 import com.panda.lockscreen.notification.Schedule
 import com.panda.lockscreen.presentation.viewmodel.ReminderViewModel
 import com.panda.lockscreen.utils.Constants
 import com.panda.lockscreen.utils.createDailyReminderSchedule
+import org.json.JSONObject
 import org.koin.android.scope.getOrCreateScope
 import org.koin.core.scope.Scope
 import java.util.Calendar
 
 class TestActivity : AppCompatActivity() {
 
-    private val scope: Scope by getOrCreateScope()
-    private val viewModel: ReminderViewModel by lazy(LazyThreadSafetyMode.NONE) {
-        scope.get()
-    }
+    private val viewModel: ReminderViewModel by viewModels()
     private var notificationLauncher: ActivityResultLauncher<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,12 +41,40 @@ class TestActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
         notificationLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
                     handleInsertViewModel()
                 }
             }
+        requestRemoteConfig()
+    }
+
+    private fun requestRemoteConfig() {
+        val remoteConfig: FirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 3600
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+        remoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
+        remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                setRemoteConfig(remoteConfig)
+            }
+            handleRequestNotification()
+
+        }.addOnFailureListener {
+            handleRequestNotification()
+        }
+    }
+
+    private fun setRemoteConfig(remoteConfig: FirebaseRemoteConfig) {
+        AppConfigManager.getInstance().remoteContentJson = remoteConfig.getString("REMOTE_CONTENT_LOCK_SCREEN")
+    }
+
+    private fun handleRequestNotification() {
+
 
         if (isNotificationPermissionGranted()) {
             handleInsertViewModel()
@@ -88,37 +118,14 @@ class TestActivity : AppCompatActivity() {
     }
 
     private fun handleInsertViewModel() {
-        val interValstring = "1,3,5,7"
-        val intervals = interValstring.split(",").map { it.trim().toInt() }
-
-        val titleIds = listOf(
-            R.string.reminder_title_1,
-            R.string.reminder_title_2,
-            R.string.reminder_title_3,
-            R.string.reminder_title_4
-        )
-        val subTitleIds = listOf(
-            R.string.reminder_subtitle_1,
-            R.string.reminder_subtitle_2,
-            R.string.reminder_subtitle_3,
-            R.string.reminder_subtitle_4
-        )
-        val imageIds =
-            listOf(
-                R.drawable.img_reminder,
-                R.drawable.img_reminder,
-                R.drawable.img_reminder,
-                R.drawable.img_reminder
-            )
         viewModel.setupReminders(
             context = this,
-            intervals = intervals,
-            titleIds = titleIds,
-            subTitleIds = subTitleIds,
-            imageIds = imageIds,
-            isPresent = true
+            listLockScreen = AppConfigManager.getInstance().getLockScreenList()
         )
+
     }
+
+
 
 
 }

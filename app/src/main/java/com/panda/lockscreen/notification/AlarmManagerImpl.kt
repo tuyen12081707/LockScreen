@@ -83,11 +83,30 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
                 calendar.set(Calendar.HOUR_OF_DAY, getHourDay(schedule.hour, schedule.units))
                 calendar.set(Calendar.MINUTE, schedule.minute)
                 calendar.set(Calendar.SECOND, 0)
-                alarmManager.setAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    calendar.timeInMillis,
-                    pendingIntent
-                )
+                if (calendar.timeInMillis < System.currentTimeMillis()) {
+                    calendar.add(Calendar.DATE, 7)
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (alarmManager.canScheduleExactAlarms()) {
+                        alarmManager.setExactAndAllowWhileIdle(
+                            AlarmManager.RTC_WAKEUP,
+                            calendar.timeInMillis,
+                            pendingIntent
+                        )
+                    } else {
+                        alarmManager.set(
+                            AlarmManager.RTC_WAKEUP,
+                            calendar.timeInMillis,
+                            pendingIntent
+                        )
+                    }
+                } else {
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                }
                 Log.e(
                     TAG,
                     "ScheduleWeek: ${getCurrentWeek()} ${getWeekOfYearUsingCalendar(schedule.time)}"
@@ -110,22 +129,54 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
                         if (calendar.timeInMillis < System.currentTimeMillis()) {
                             calendar.add(Calendar.DATE, 31)
                         }
-                        alarmManager.setAndAllowWhileIdle(
-                            AlarmManager.RTC_WAKEUP,
-                            calendar.timeInMillis,
-                            pendingIntent
-                        )
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            if (alarmManager.canScheduleExactAlarms()) {
+                                alarmManager.setExactAndAllowWhileIdle(
+                                    AlarmManager.RTC_WAKEUP,
+                                    calendar.timeInMillis,
+                                    pendingIntent
+                                )
+                            } else {
+                                alarmManager.set(
+                                    AlarmManager.RTC_WAKEUP,
+                                    calendar.timeInMillis,
+                                    pendingIntent
+                                )
+                            }
+                        } else {
+                            alarmManager.setExactAndAllowWhileIdle(
+                                AlarmManager.RTC_WAKEUP,
+                                calendar.timeInMillis,
+                                pendingIntent
+                            )
+                        }
                     }
 
                     Calendar.APRIL, Calendar.JUNE, Calendar.SEPTEMBER, Calendar.NOVEMBER -> {
                         if (calendar.timeInMillis < System.currentTimeMillis()) {
                             calendar.add(Calendar.DATE, 30)
                         }
-                        alarmManager.setAndAllowWhileIdle(
-                            AlarmManager.RTC_WAKEUP,
-                            calendar.timeInMillis,
-                            pendingIntent
-                        )
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            if (alarmManager.canScheduleExactAlarms()) {
+                                alarmManager.setExactAndAllowWhileIdle(
+                                    AlarmManager.RTC_WAKEUP,
+                                    calendar.timeInMillis,
+                                    pendingIntent
+                                )
+                            } else {
+                                alarmManager.set(
+                                    AlarmManager.RTC_WAKEUP,
+                                    calendar.timeInMillis,
+                                    pendingIntent
+                                )
+                            }
+                        } else {
+                            alarmManager.setExactAndAllowWhileIdle(
+                                AlarmManager.RTC_WAKEUP,
+                                calendar.timeInMillis,
+                                pendingIntent
+                            )
+                        }
                     }
 
                     Calendar.FEBRUARY -> {
@@ -134,24 +185,91 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
                             if (calendar.timeInMillis < System.currentTimeMillis()) {
                                 calendar.add(Calendar.DATE, 29)
                             }
-                            alarmManager.setAndAllowWhileIdle(
-                                AlarmManager.RTC_WAKEUP,
-                                calendar.timeInMillis,
-                                pendingIntent
-                            )
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                if (alarmManager.canScheduleExactAlarms()) {
+                                    alarmManager.setExactAndAllowWhileIdle(
+                                        AlarmManager.RTC_WAKEUP,
+                                        calendar.timeInMillis,
+                                        pendingIntent
+                                    )
+                                } else {
+                                    alarmManager.set(
+                                        AlarmManager.RTC_WAKEUP,
+                                        calendar.timeInMillis,
+                                        pendingIntent
+                                    )
+                                }
+                            } else {
+                                alarmManager.setExactAndAllowWhileIdle(
+                                    AlarmManager.RTC_WAKEUP,
+                                    calendar.timeInMillis,
+                                    pendingIntent
+                                )
+                            }
                         } else {
                             if (calendar.timeInMillis < System.currentTimeMillis()) {
                                 calendar.add(Calendar.DATE, 28)
                             }
-                            alarmManager.setAndAllowWhileIdle(
-                                AlarmManager.RTC_WAKEUP,
-                                calendar.timeInMillis,
-                                pendingIntent
-                            )
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                if (alarmManager.canScheduleExactAlarms()) {
+                                    alarmManager.setExactAndAllowWhileIdle(
+                                        AlarmManager.RTC_WAKEUP,
+                                        calendar.timeInMillis,
+                                        pendingIntent
+                                    )
+                                } else {
+                                    alarmManager.set(
+                                        AlarmManager.RTC_WAKEUP,
+                                        calendar.timeInMillis,
+                                        pendingIntent
+                                    )
+                                }
+                            } else {
+                                alarmManager.setExactAndAllowWhileIdle(
+                                    AlarmManager.RTC_WAKEUP,
+                                    calendar.timeInMillis,
+                                    pendingIntent
+                                )
+                            }
                         }
                     }
                 }
                 Log.e(TAG, "ScheduleMonth: ${calendar.timeInMillis.longToDateString("dd/MM/yy HH:mm")} ${schedule.hour} : ${schedule.minute}")
+            }
+
+            is Schedule.ScheduleRemote ->{
+                val dayOffset = schedule.intervals
+                val calendar = Calendar.getInstance().apply {
+                    timeInMillis = schedule.createdAt
+                    add(Calendar.DAY_OF_YEAR, dayOffset)
+                    set(Calendar.HOUR_OF_DAY, getHourDay(schedule.hour, schedule.units))
+                    set(Calendar.MINUTE, schedule.minute)
+                    set(Calendar.SECOND, 0)
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (alarmManager.canScheduleExactAlarms()) {
+                        alarmManager.setExactAndAllowWhileIdle(
+                            AlarmManager.RTC_WAKEUP,
+                            calendar.timeInMillis,
+                            pendingIntent
+                        )
+                    } else {
+                        alarmManager.set(
+                            AlarmManager.RTC_WAKEUP,
+                            calendar.timeInMillis,
+                            pendingIntent
+                        )
+                    }
+                } else {
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                }
+
+                Log.e(TAG, "ScheduleEachDay: Set reminder at ${calendar.timeInMillis.longToDateString("dd/MM/yy HH:mm")} (after $dayOffset days)")
             }
         }
     }

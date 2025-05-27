@@ -16,10 +16,10 @@ import java.util.Calendar
 import java.util.Date
 
 class AlarmReminderBroadcastCast : BroadcastReceiver(), KoinComponent {
+    private val repository: ReminderRepository by inject()
 
     override fun onReceive(context: Context?, intent: Intent?) {
         Log.e("AlarmManagerImpl", "onReceive: ")
-
         val keyguardManager = context?.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         val powerManager =
             context.getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
@@ -33,19 +33,30 @@ class AlarmReminderBroadcastCast : BroadcastReceiver(), KoinComponent {
             "AlarmManagerImpl",
             "Device locked or not interactive: $isDeviceLockedOrNotInteractive"
         )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent?.getParcelableExtra("schedule_data", Schedule::class.java)
-        } else {
-            intent?.getParcelableExtra("schedule_data")
-        }?.let { schedule ->
-            Log.e("AlarmManagerImpl", "onReceive: ${schedule.id}", )
-            context.let { context ->
-                NotificationManagerImpl(
-                    context,
-                    schedule
-                ).createNotification()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent?.getParcelableExtra("schedule_data", Schedule::class.java)
+            } else {
+                intent?.getParcelableExtra("schedule_data")
+            }?.let { schedule ->
+                Log.e("AlarmManagerImpl", "onReceive: ${schedule.id}")
+                    Log.e(
+                        "AlarmManagerImpl",
+                        "onReceive: ${schedule.id} repeatTimes ${schedule.repeatTimes}   timesShowed = ${schedule.repeatTimes}",
+                    )
+                    if (schedule.repeatTimes==1) {
+                        Log.e(
+                            "AlarmManagerImpl",
+                            "onReceive: $schedule ${getCurrentDay()}"
+                        )
+                        context.let { context ->
+                            NotificationManagerImpl(
+                                context,
+                                schedule
+                            ).createNotification()
+                        }
+                    }
             }
-        }
+
     }
 
     fun getWeekOfYearUsingCalendar(timeInMillis: Long): Int {
@@ -62,6 +73,7 @@ class AlarmReminderBroadcastCast : BroadcastReceiver(), KoinComponent {
     private fun getCurrentDay(): Int {
         return Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
     }
+
     private fun getCurrentWeek(): Int {
         return Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
     }
