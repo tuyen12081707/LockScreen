@@ -17,22 +17,20 @@ fun createDailyReminderSchedule(
     hour: Int,
     minute: Int,
     createdAt: Long = System.currentTimeMillis(),
-    titleId: Int = R.string.unlock_wifi_passwords_near_you,
-    subTitleId: Int = R.string.tap_to_check_nearby_wifi_networks_and_connect_effortlessly,
-    imageId: Int = R.drawable.img_reminder,
+    title: String,
+    content: String,
+    imageUrl: String,
     units: Int = Constants.TimeUnit.AM,
     imageBackup: Int? = null
 ): Schedule.ScheduleEachDay {
-
-
     return Schedule.ScheduleEachDay(
         id = intervals,
-        repeatTimes = 0,
+        repeatTimes = 1,
         intervals = intervals,
         createdAt = createdAt,
-        titleId = titleId,
-        subTitleId = subTitleId,
-        imageId = imageId,
+        title = title,
+        content = content,
+        imageUrl = imageUrl,
         hour = hour,
         minute = minute,
         units = units,
@@ -40,13 +38,60 @@ fun createDailyReminderSchedule(
     )
 }
 
-/**
- * Reused function to generate a unique ID.
- */
-fun generateUniqueId(
+
+
+fun createLockScreenByDayOfMonthSchedule(
     id: Int,
-    dayOffset: Int,
-): Int {
-    val raw = "${id}_${dayOffset}"
-    return raw.hashCode()
+    days: Int,
+    hour: Int,
+    minute: Int,
+    createdAt: Long = System.currentTimeMillis(),
+    title: String,
+    content: String,
+    repeatTimes: Int = 1,
+    imageUrl: String,
+    units: Int = Constants.TimeUnit.AM,
+    imageBackup: Int? = null
+): Schedule.ScheduleMonth {
+    return Schedule.ScheduleMonth(
+        id = id,
+        repeatTimes = repeatTimes,
+        title = title,
+        content = content,
+        imageUrl = imageUrl,
+        hour = hour,
+        minute = minute,
+        units = units,
+        imageBackup = imageBackup,
+        dayOfMonth = days,
+        time = System.currentTimeMillis()
+    )
+}
+
+fun createLockScreenByDayOfWeekSchedule(
+    id: Int,
+    days: Int,
+    hour: Int,
+    minute: Int,
+    createdAt: Long = System.currentTimeMillis(),
+    title: String,
+    content: String,
+    imageUrl: String,
+    repeatTimes: Int = 1,
+    units: Int = Constants.TimeUnit.AM,
+    imageBackup: Int? = null
+): Schedule.ScheduleWeek {
+    return Schedule.ScheduleWeek(
+        id = id,
+        repeatTimes = repeatTimes,
+        title = title,
+        content = content,
+        imageUrl = imageUrl,
+        hour = hour,
+        minute = minute,
+        units = units,
+        imageBackup = imageBackup,
+        dayOfWeek = days,
+        time = System.currentTimeMillis()
+    )
 }
