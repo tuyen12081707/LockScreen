@@ -2,9 +2,11 @@ package com.panda.lockscreen.presentation.activity
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,7 +33,11 @@ class TestActivity : AppCompatActivity() {
 
     private val viewModel: ReminderViewModel by viewModels()
     private var notificationLauncher: ActivityResultLauncher<String>? = null
-
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        val event = intent.getStringExtra("event")?:""
+        Log.d("Event==",event)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -70,7 +76,7 @@ class TestActivity : AppCompatActivity() {
     }
 
     private fun setRemoteConfig(remoteConfig: FirebaseRemoteConfig) {
-        AppConfigManager.getInstance().remoteContentJson = remoteConfig.getString("REMOTE_CONTENT_LOCK_SCREEN")
+        AppConfigManager.getInstance().remoteContentJson = remoteConfig.getString(Constants.RemoteConfig.REMOTE_CONTENT_LOCK_SCREEN)
     }
 
     private fun handleRequestNotification() {

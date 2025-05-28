@@ -17,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class ReminderViewModel() : ViewModel() {
+class ReminderViewModel : ViewModel() {
 
     fun setupReminders(
         context: Context,
@@ -30,7 +30,6 @@ class ReminderViewModel() : ViewModel() {
         val currentHour: Int
         val currentMinute: Int
         val units: Int
-
         if (isPresent) {
             currentHour = now.get(Calendar.HOUR_OF_DAY)
             currentMinute = now.get(Calendar.MINUTE)
@@ -41,7 +40,8 @@ class ReminderViewModel() : ViewModel() {
             currentMinute = minute
             units = if (hour >= 12) Constants.TimeUnit.PM else Constants.TimeUnit.AM
         }
-        val isMonth = listLockScreen.any { it.day > 7 }
+        val isMonth =
+            listLockScreen.any { it.day > 7 || it.type == Constants.TypeLockScreen.TYPE_MONTH }
         if (isMonth) {
             listLockScreen.forEach { item ->
                 val schedule = createLockScreenByDayOfMonthSchedule(
@@ -54,7 +54,9 @@ class ReminderViewModel() : ViewModel() {
                     imageUrl = item.image,
                     repeatTimes = item.repeatTimes,
                     days = item.day,
-                    createdAt = System.currentTimeMillis()
+                    buttonContent = item.buttonContent,
+                    createdAt = System.currentTimeMillis(),
+                    backgroundUrl = item.backgroundUrl
                 )
 
                 setReminder(context, schedule)
@@ -62,7 +64,7 @@ class ReminderViewModel() : ViewModel() {
             }
         } else {
             /**
-             * Xử lý days bị trùng trong list
+             * handling duplicate days in list
              */
             val duplicatedDays = listLockScreen
                 .filter { it.day in 1..7 }
@@ -72,7 +74,7 @@ class ReminderViewModel() : ViewModel() {
                 .keys
 
             duplicatedDays.forEach { day ->
-                val itemsInDay = listLockScreen.filter { it.day == day  }
+                val itemsInDay = listLockScreen.filter { it.day == day }
                 val item = itemsInDay.random()
 
                 val schedule = createLockScreenByDayOfWeekSchedule(
@@ -85,12 +87,14 @@ class ReminderViewModel() : ViewModel() {
                     imageUrl = item.image,
                     repeatTimes = item.repeatTimes,
                     days = item.day,
-                    createdAt = System.currentTimeMillis()
+                    buttonContent = item.buttonContent,
+                    createdAt = System.currentTimeMillis(),
+                    backgroundUrl = item.backgroundUrl
                 )
                 setReminder(context, schedule)
             }
             /*
-            Xử lý các ngày không bị trùng
+            handling other
              */
             val uniqueDaysItems = listLockScreen.filter {
                 it.day in 1..7 &&
@@ -107,8 +111,10 @@ class ReminderViewModel() : ViewModel() {
                     content = item.content,
                     imageUrl = item.image,
                     repeatTimes = item.repeatTimes,
+                    buttonContent = item.buttonContent,
                     days = item.day,
-                    createdAt = System.currentTimeMillis()
+                    createdAt = System.currentTimeMillis(),
+                    backgroundUrl = item.backgroundUrl
                 )
                 setReminder(context, schedule)
             }

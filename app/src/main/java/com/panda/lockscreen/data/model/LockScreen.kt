@@ -9,6 +9,7 @@ data class LockScreen(
     val day: Int = 0,
     val hour: Int = 15,
     val mintues: Int = 0,
+    val buttonContent: String = "",
     val type: String = "",
     val repeatTimes: Int = 1,
     val event: String = ""

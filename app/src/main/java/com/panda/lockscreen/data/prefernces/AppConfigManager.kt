@@ -25,8 +25,7 @@ class AppConfigManager private constructor(context: Context) : Preferences(conte
     }
 
 
-
-    var remoteContentJson by stringPref("REMOTE_CONTENT_LOCK_SCREEN", "{}")
+    var remoteContentJson by stringPref(Constants.RemoteConfig.REMOTE_CONTENT_LOCK_SCREEN, "{}")
 
 
     fun getLockScreenList(): ArrayList<LockScreen> {
@@ -45,6 +44,7 @@ class AppConfigManager private constructor(context: Context) : Preferences(conte
                         image = item.optString("image"),
                         day = item.optInt("day"),
                         hour = item.optInt("hour"),
+                        buttonContent = item.optString(""),
                         mintues = item.optInt("minutes"),
                         type = item.optString("type"),
                         repeatTimes = item.getInt("repeatTimes"),
@@ -58,8 +58,6 @@ class AppConfigManager private constructor(context: Context) : Preferences(conte
         }
         return list
     }
-
-
 
 
 }

@@ -2,6 +2,14 @@ package com.panda.lockscreen.utils
 
 object Constants {
 
+    object RemoteConfig{
+        const val REMOTE_CONTENT_LOCK_SCREEN="REMOTE_CONTENT_LOCK_SCREEN"
+    }
+    object TypeLockScreen{
+        const val TYPE_WEEK="week"
+        const val TYPE_MONTH = "month"
+    }
+
     object TimeUnit {
         const val AM = 0
         const val PM = 1

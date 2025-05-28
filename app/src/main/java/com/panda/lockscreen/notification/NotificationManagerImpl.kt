@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
-import android.widget.RemoteViews
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -20,7 +19,7 @@ import com.panda.lockscreen.R
 
 interface INotification {
 
-    fun createNotification()
+    fun createNotification(event: String)
     fun cancelNotification()
 }
 
@@ -51,12 +50,13 @@ class NotificationManagerImpl(private val context: Context,private val schedule:
         return notificationManager
     }
 
-    override fun createNotification() {
+    override fun createNotification(event: String) {
         Log.e("AlarmManagerImpl", "createNotification: ", )
 
 
         val intentMain = Intent(context, TestActivity::class.java).apply {
             putExtra("isFromLockScreen", true)
+            putExtra("event",event)
         }
         val pendingIntentMain = PendingIntent.getActivity(
             context,

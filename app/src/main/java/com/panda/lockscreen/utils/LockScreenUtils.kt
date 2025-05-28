@@ -21,7 +21,10 @@ fun createDailyReminderSchedule(
     content: String,
     imageUrl: String,
     units: Int = Constants.TimeUnit.AM,
-    imageBackup: Int? = null
+    imageBackup: Int? = null,
+    backgroundUrl:String,
+    buttonContent: String,
+    event:String=""
 ): Schedule.ScheduleEachDay {
     return Schedule.ScheduleEachDay(
         id = intervals,
@@ -34,10 +37,12 @@ fun createDailyReminderSchedule(
         hour = hour,
         minute = minute,
         units = units,
-        imageBackup = imageBackup
+        imageBackup = imageBackup,
+        event = event,
+        buttonContent = buttonContent,
+        backgroundUrl = backgroundUrl
     )
 }
-
 
 
 fun createLockScreenByDayOfMonthSchedule(
@@ -48,10 +53,13 @@ fun createLockScreenByDayOfMonthSchedule(
     createdAt: Long = System.currentTimeMillis(),
     title: String,
     content: String,
+    buttonContent: String,
     repeatTimes: Int = 1,
     imageUrl: String,
+    backgroundUrl:String,
     units: Int = Constants.TimeUnit.AM,
-    imageBackup: Int? = null
+    imageBackup: Int? = null,
+    event: String = ""
 ): Schedule.ScheduleMonth {
     return Schedule.ScheduleMonth(
         id = id,
@@ -64,7 +72,10 @@ fun createLockScreenByDayOfMonthSchedule(
         units = units,
         imageBackup = imageBackup,
         dayOfMonth = days,
-        time = System.currentTimeMillis()
+        time = System.currentTimeMillis(), event = event,
+        buttonContent = buttonContent,
+        backgroundUrl = backgroundUrl
+
     )
 }
 
@@ -77,9 +88,12 @@ fun createLockScreenByDayOfWeekSchedule(
     title: String,
     content: String,
     imageUrl: String,
+    backgroundUrl:String,
     repeatTimes: Int = 1,
     units: Int = Constants.TimeUnit.AM,
-    imageBackup: Int? = null
+    imageBackup: Int? = null,
+    buttonContent: String,
+    event: String = ""
 ): Schedule.ScheduleWeek {
     return Schedule.ScheduleWeek(
         id = id,
@@ -92,6 +106,9 @@ fun createLockScreenByDayOfWeekSchedule(
         units = units,
         imageBackup = imageBackup,
         dayOfWeek = days,
-        time = System.currentTimeMillis()
+        time = System.currentTimeMillis(),
+        event = event,
+        buttonContent = buttonContent,
+        backgroundUrl = backgroundUrl
     )
 }

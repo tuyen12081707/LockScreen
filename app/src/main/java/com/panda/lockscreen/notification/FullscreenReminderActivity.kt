@@ -19,6 +19,7 @@ import java.util.Date
 import java.util.Locale
 import androidx.core.net.toUri
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.panda.lockscreen.R
 
 class FullscreenReminderActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFullScreenReminderBinding
@@ -70,10 +71,11 @@ class FullscreenReminderActivity : AppCompatActivity() {
         }
 
         binding.btnOpenApp.setOnClickListener {
+            Log.d("TAG==",schedule?.event?:"")
             openMainActivity(1)
         }
 
-        binding.icBtnClose.setOnClickListener {
+        binding.btnClose.setOnClickListener {
             finishAffinity()
         }
     }
@@ -90,6 +92,12 @@ class FullscreenReminderActivity : AppCompatActivity() {
             val imageUrl = it.imageUrl.trim().toUri()
             Glide.with(binding.imgAddPhoto)
                 .load(imageUrl)
+                .placeholder(R.drawable.img_reminder)
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
+                .into(binding.imgAddPhoto)
+            Glide.with(binding.main)
+                .load(it.imageBackup)
+                .placeholder(R.drawable.img_reminder)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(binding.imgAddPhoto)
         }

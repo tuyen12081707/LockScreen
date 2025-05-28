@@ -6,17 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
-import com.panda.lockscreen.data.repository.ReminderRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import java.util.Calendar
 import java.util.Date
 
-class AlarmReminderBroadcastCast : BroadcastReceiver(), KoinComponent {
-    private val repository: ReminderRepository by inject()
+class AlarmReminderBroadcastCast : BroadcastReceiver(){
 
     override fun onReceive(context: Context?, intent: Intent?) {
         Log.e("AlarmManagerImpl", "onReceive: ")
@@ -52,7 +45,7 @@ class AlarmReminderBroadcastCast : BroadcastReceiver(), KoinComponent {
                             NotificationManagerImpl(
                                 context,
                                 schedule
-                            ).createNotification()
+                            ).createNotification(schedule.event)
                         }
                     }
             }
