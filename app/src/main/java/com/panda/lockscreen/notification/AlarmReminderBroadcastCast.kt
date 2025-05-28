@@ -9,7 +9,7 @@ import android.util.Log
 import java.util.Calendar
 import java.util.Date
 
-class AlarmReminderBroadcastCast : BroadcastReceiver(){
+class AlarmReminderBroadcastCast : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         Log.e("AlarmManagerImpl", "onReceive: ")
@@ -26,29 +26,30 @@ class AlarmReminderBroadcastCast : BroadcastReceiver(){
             "AlarmManagerImpl",
             "Device locked or not interactive: $isDeviceLockedOrNotInteractive"
         )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                intent?.getParcelableExtra("schedule_data", Schedule::class.java)
-            } else {
-                intent?.getParcelableExtra("schedule_data")
-            }?.let { schedule ->
-                Log.e("AlarmManagerImpl", "onReceive: ${schedule.id}")
-                    Log.e(
-                        "AlarmManagerImpl",
-                        "onReceive: ${schedule.id} repeatTimes ${schedule.repeatTimes}   timesShowed = ${schedule.repeatTimes}",
-                    )
-                    if (schedule.repeatTimes==1) {
-                        Log.e(
-                            "AlarmManagerImpl",
-                            "onReceive: $schedule ${getCurrentDay()}"
-                        )
-                        context.let { context ->
-                            NotificationManagerImpl(
-                                context,
-                                schedule
-                            ).createNotification(schedule.event)
-                        }
-                    }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent?.getParcelableExtra("schedule_data", Schedule::class.java)
+        } else {
+            intent?.getParcelableExtra("schedule_data")
+        }?.let { schedule ->
+            Log.e("AlarmManagerImpl", "onReceive: ${schedule.id}")
+            Log.e(
+                "AlarmManagerImpl",
+                "onReceive: ${schedule.id} repeatTimes ${schedule.repeatTimes}   timesShowed = ${schedule.repeatTimes}",
+            )
+            context.let { context ->
+                NotificationManagerImpl(
+                    context,
+                    schedule
+                ).createNotification(schedule.event)
             }
+            if (schedule.repeatTimes == 1) {
+                Log.e(
+                    "AlarmManagerImpl",
+                    "onReceive: $schedule ${getCurrentDay()}"
+                )
+                AlarmManagerImpl(context).schedule(schedule)
+            }
+        }
 
     }
 

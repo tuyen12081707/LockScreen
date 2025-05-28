@@ -33,7 +33,7 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
                 val calendar = Calendar.getInstance().apply {
                     timeInMillis = schedule.createdAt
                     add(Calendar.DAY_OF_YEAR, dayOffset)
-                    set(Calendar.HOUR_OF_DAY, getHourDay(schedule.hour, schedule.units))
+                    set(Calendar.HOUR_OF_DAY, schedule.hour)
                     set(Calendar.MINUTE, schedule.minute)
                     set(Calendar.SECOND, 0)
                 }
@@ -65,7 +65,7 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
 
             is Schedule.ScheduleDay -> {
                 val calendar = Calendar.getInstance()
-                calendar.set(Calendar.HOUR_OF_DAY, getHourDay(schedule.hour, schedule.units))
+                calendar.set(Calendar.HOUR_OF_DAY, schedule.hour)
                 calendar.set(Calendar.MINUTE, schedule.minute)
                 calendar.set(Calendar.SECOND, 0)
                 alarmManager.setAndAllowWhileIdle(
@@ -80,7 +80,7 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
                     calendar.set(Calendar.DAY_OF_WEEK, schedule.dayOfWeek)
                 } catch (_: Exception) {
                 }
-                calendar.set(Calendar.HOUR_OF_DAY, getHourDay(schedule.hour, schedule.units))
+                calendar.set(Calendar.HOUR_OF_DAY, schedule.hour)
                 calendar.set(Calendar.MINUTE, schedule.minute)
                 calendar.set(Calendar.SECOND, 0)
                 if (calendar.timeInMillis < System.currentTimeMillis()) {
@@ -121,7 +121,7 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
                 val calendar = Calendar.getInstance()
                 val currentMonth = calendar.get(Calendar.MONTH)
                 calendar.set(Calendar.DAY_OF_MONTH, schedule.dayOfMonth)
-                calendar.set(Calendar.HOUR_OF_DAY, getHourDay(schedule.hour, schedule.units))
+                calendar.set(Calendar.HOUR_OF_DAY, schedule.hour)
                 calendar.set(Calendar.MINUTE, schedule.minute)
                 calendar.set(Calendar.SECOND, 0)
                 when (currentMonth) {
