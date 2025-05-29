@@ -80,8 +80,9 @@ class NotificationManagerImpl(private val context: Context,private val schedule:
             .setContentTitle(schedule.title)
             .setContentText(schedule.content)
             .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setCategory(NotificationCompat.CATEGORY_CALL) // Đặt category là CATEGORY_CALL
+            .setCategory(NotificationCompat.CATEGORY_ALARM) // Đặt category là CATEGORY_CALL
             .setFullScreenIntent(pendingIntent, true)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(pendingIntentMain)
             .setAutoCancel(true)
         if (ActivityCompat.checkSelfPermission(
