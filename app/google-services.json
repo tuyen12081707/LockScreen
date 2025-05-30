@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "732306145179",
+    "project_id": "app008--wifi-password--test",
+    "storage_bucket": "app008--wifi-password--test.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:732306145179:android:48fd21cb642b6173786b3e",
+        "android_client_info": {
+          "package_name": "com.horizon.wifimanager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBPHWKvg3Z1A9dhBHz4nanSKkqoyWEZb0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:732306145179:android:dfac6a06a7d542aa786b3e",
+        "android_client_info": {
+          "package_name": "com.panda.lockscreen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBPHWKvg3Z1A9dhBHz4nanSKkqoyWEZb0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

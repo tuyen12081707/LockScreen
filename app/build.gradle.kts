@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.google.ksp)
 
     id("kotlin-parcelize")
+    alias(libs.plugins.google.gms.google.services)
 
 }
 
@@ -13,10 +14,10 @@ android {
 
     defaultConfig {
         applicationId = "com.panda.lockscreen"
-        minSdk = 27
+        minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 103
+        versionName = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -62,7 +63,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    testImplementation(libs.junit)
+    implementation(libs.firebase.config)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
@@ -81,4 +82,8 @@ dependencies {
     implementation("com.intuit.sdp:sdp-android:1.1.1")
     implementation("com.intuit.ssp:ssp-android:1.1.1")
 
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.google.firebase.analytics)
+    implementation (libs.glide)
+    implementation (project(":reminderlockscreen"))
 }

@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">LockScreen</string>
+    <string name="unlock_wifi_passwords_near_you">Unlock WiFi Passwords Near You!</string>
+    <string name="tap_to_check_nearby_wifi_networks_and_connect_effortlessly">Tap to check nearby WiFi networks and connect effortlessly!</string>
+
+    <string name="reminder_title_1">Water Aloe Vera (Day 1)</string>
+    <string name="reminder_subtitle_1">Time to hydrate your plant!</string>
+    <string name="reminder_button_1">View Plant</string>
+    <string name="reminder_title_2">Water Aloe Vera (Day 3)</string>
+    <string name="reminder_subtitle_2">Your plant needs water again!</string>
+    <string name="reminder_button_2">Check Now</string>
+    <string name="reminder_title_3">Water Aloe Vera (Day 5)</string>
+    <string name="reminder_subtitle_3">Don’t forget to water!</string>
+    <string name="reminder_button_3">Open App</string>
+    <string name="reminder_title_4">Water Aloe Vera (Day 7)</string>
+    <string name="reminder_subtitle_4">Final watering reminder!</string>
+    <string name="reminder_button_4">See Details</string>
+    <string name="reminder_title_default">Plant Reminder</string>
+    <string name="reminder_subtitle_default">Time to care for your plant</string>
+    <string name="reminder_button_default">Open</string>
 </resources>

@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "LockScreen"
 include(":app")
- 
+include(":reminderlockscreen")
