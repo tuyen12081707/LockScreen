@@ -1,5 +1,6 @@
     implementation ("com.github.tuyen12081707:LockScreen:1.0.2")
 - Tạo 1 file json như ví dụ ở trong assets/lockscreen.json
+- Update sdk lên 35
 - Tạo 1 model Lockscreen
 - ví dụ có 14 content thì đổi model type = "month" và set tay thành đủ 30 ngày chẳng hạn , xong nếu muốn lặp lại mỗi tháng để repeatTime = 1
 - Ví dụ chỉ có 7 content thì đổi modle type = "week" và xong nếu muốn lặp lại mỗi tuần để repeatTime = 1
