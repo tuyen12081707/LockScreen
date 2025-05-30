@@ -14,15 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LockScreen">
-        <activity
-            android:name=".presentation.activity.MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <receiver android:name=".notification.AlarmReminderBroadcastCast"/>
         <activity android:name=".notification.FullscreenReminderActivity"
             android:exported="true"
