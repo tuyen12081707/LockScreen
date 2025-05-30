@@ -47,7 +47,7 @@ implementation("com.github.tuyen12081707:LockScreen:1.0.3")
 
 ---
 
-### 3. Gọi SDK để lên lịch nhắc:
+### 3. Gọi Hàm ReminderScheduler để lên lịch nhắc:
 
 ```kotlin
 val listLock = AppConfigManager.getInstance().getLockScreenList()
