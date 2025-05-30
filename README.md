@@ -13,7 +13,8 @@ Gọi Hàm
             this,
             listLock,
         )
-		    fun getLockScreenList(): ArrayList<LockScreen> {
+
+   fun getLockScreenList(): ArrayList<LockScreen> {
         val list = ArrayList<LockScreen>()
         try {
             val jsonArray = remoteContentJson?.let { JSONArray(it) }
