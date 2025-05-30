@@ -47,6 +47,7 @@ firebase-config = { group = "com.google.firebase", name = "firebase-config", ver
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 
 google-ksp = { id = "com.google.devtools.ksp", version.ref ="ksp" }
 google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }

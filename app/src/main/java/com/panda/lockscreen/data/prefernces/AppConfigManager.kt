@@ -1,11 +1,9 @@
 package com.panda.lockscreen.data.prefernces
 
 import android.content.Context
-import android.content.SharedPreferences
-import com.panda.lockscreen.data.model.LockScreen
-import com.panda.lockscreen.utils.Constants
+import com.panda.reminderlockscreen.model.LockScreen
+import com.panda.lockscreen.data.utils.Constants
 import org.json.JSONArray
-import org.json.JSONObject
 
 class AppConfigManager private constructor(context: Context) : Preferences(context, "Base_App") {
     companion object {

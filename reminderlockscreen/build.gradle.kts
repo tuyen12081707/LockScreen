@@ -1,6 +1,9 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.ksp)
+
+    id("kotlin-parcelize")
 }
 
 android {
@@ -8,15 +11,15 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.panda.reminderlockscreen"
-        minSdk = 27
+        minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -33,6 +36,7 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
 }
 
 dependencies {
@@ -43,6 +47,9 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
+    implementation (libs.glide)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation("com.intuit.sdp:sdp-android:1.1.1")
+    implementation("com.intuit.ssp:ssp-android:1.1.1")
 }

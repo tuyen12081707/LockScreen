@@ -4,8 +4,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_full_screen"
     android:gravity="bottom"
-    android:background="@color/black"
     android:orientation="vertical"
     android:padding="@dimen/_12sdp">
 
@@ -137,7 +137,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_14sdp"
                 android:background="@drawable/bg_button_native"
-                android:backgroundTint="@color/primary"
                 android:gravity="center"
                 android:padding="@dimen/_8sdp"
                 android:text="Let's go"

@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <application
-        android:name=".MyApp"
+        android:name=".data.MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -21,7 +21,7 @@
         android:theme="@style/Theme.LockScreen"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.activity.TestActivity"
+            android:name=".data.TestActivity"
             android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
@@ -30,14 +30,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".notification.AlarmReminderBroadcastCast"/>
-        <activity android:name=".notification.FullscreenReminderActivity"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.Transparent"
+        <activity android:name=".data.FullscreenReminderActivity"
+
             />
-        <receiver android:name=".receiver.NotificationClickReceiver" />
     </application>
 
 </manifest>
