@@ -57,7 +57,10 @@ class NotificationManagerImpl(
     override fun createNotification(event: String) {
         Log.e("AlarmManagerImpl", "createNotification: ")
 
-        val intentMain = LockScreenConfig.intentProvider.getMainIntent(context, event)
+        val intentMain = LockScreenConfig.intentProvider?.getMainIntent(context, event) ?: Intent(
+            context,
+            MainActivity::class.java
+        )
         val pendingIntentMain = PendingIntent.getActivity(
             context,
             0,
@@ -65,7 +68,9 @@ class NotificationManagerImpl(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val reminderIntent = LockScreenConfig.intentProvider.getFullscreenReminderIntent(context, schedule)
+        val reminderIntent =
+            LockScreenConfig.intentProvider?.getFullscreenReminderIntent(context, schedule)
+                ?: Intent(context, FullscreenReminderActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             context,
             schedule.id,
