@@ -23,7 +23,8 @@ fun createDailyReminderSchedule(
     imageBackup: Int? = null,
     backgroundUrl:String,
     buttonContent: String,
-    event:String=""
+    event:String="",
+    type:Int=0
 ): Schedule.ScheduleEachDay {
     return Schedule.ScheduleEachDay(
         id = intervals,
@@ -39,7 +40,8 @@ fun createDailyReminderSchedule(
         imageBackup = imageBackup,
         event = event,
         buttonContent = buttonContent,
-        backgroundUrl = backgroundUrl
+        backgroundUrl = backgroundUrl,
+        type = type
     )
 }
 
@@ -58,7 +60,8 @@ fun createLockScreenByDayOfMonthSchedule(
     backgroundUrl:String,
     units: Int = Constants.TimeUnit.AM,
     imageBackup: Int? = null,
-    event: String = ""
+    event: String = "",
+    type: Int = 0,
 ): Schedule.ScheduleMonth {
     return Schedule.ScheduleMonth(
         id = id,
@@ -73,7 +76,8 @@ fun createLockScreenByDayOfMonthSchedule(
         dayOfMonth = days,
         time = System.currentTimeMillis(), event = event,
         buttonContent = buttonContent,
-        backgroundUrl = backgroundUrl
+        backgroundUrl = backgroundUrl,
+        type = type
 
     )
 }
@@ -92,7 +96,8 @@ fun createLockScreenByDayOfWeekSchedule(
     units: Int = Constants.TimeUnit.AM,
     imageBackup: Int? = null,
     buttonContent: String,
-    event: String = ""
+    event: String = "",
+    type: Int = 0,
 ): Schedule.ScheduleWeek {
     return Schedule.ScheduleWeek(
         id = id,
@@ -108,6 +113,7 @@ fun createLockScreenByDayOfWeekSchedule(
         time = System.currentTimeMillis(),
         event = event,
         buttonContent = buttonContent,
-        backgroundUrl = backgroundUrl
+        backgroundUrl = backgroundUrl,
+        type = type
     )
 }

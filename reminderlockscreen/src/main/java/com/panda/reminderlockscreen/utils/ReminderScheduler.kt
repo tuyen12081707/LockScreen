@@ -48,7 +48,8 @@ object ReminderScheduler {
                     days = item.day,
                     buttonContent = item.buttonContent,
                     createdAt = System.currentTimeMillis(),
-                    backgroundUrl = item.backgroundUrl
+                    backgroundUrl = item.backgroundUrl,
+                    type = item.uiType
                 )
                 setReminder(context, schedule)
             }
@@ -76,7 +77,8 @@ object ReminderScheduler {
                     buttonContent = item.buttonContent,
                     days = item.day,
                     createdAt = System.currentTimeMillis(),
-                    backgroundUrl = item.backgroundUrl
+                    backgroundUrl = item.backgroundUrl,
+                    type = item.uiType
                 )
                 setReminder(context, schedule)
             }
@@ -98,7 +100,8 @@ object ReminderScheduler {
                     buttonContent = item.buttonContent,
                     days = item.day,
                     createdAt = System.currentTimeMillis(),
-                    backgroundUrl = item.backgroundUrl
+                    backgroundUrl = item.backgroundUrl,
+                    type = item.uiType
                 )
                 setReminder(context, schedule)
             }

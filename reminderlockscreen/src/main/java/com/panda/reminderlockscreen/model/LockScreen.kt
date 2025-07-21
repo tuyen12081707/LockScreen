@@ -12,5 +12,6 @@ data class LockScreen(
     val buttonContent: String = "",
     val type: String = "",
     val repeatTimes: Int = 1,
-    val event: String = ""
+    val event: String = "",
+    val uiType:Int=0,
 )
