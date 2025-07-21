@@ -117,7 +117,7 @@ class FullscreenReminderActivity : AppCompatActivity() {
     }
 
     private fun openMainActivity(source: Int) {
-        val intent = Intent(this, MainActivity::class.java).apply {
+        val intent = Intent(this, TestActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra("isFromLockScreen", true)
         }

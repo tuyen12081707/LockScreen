@@ -15,6 +15,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.panda.reminderlockscreen.R
 import com.panda.reminderlockscreen.presentation.activity.MainActivity
+import com.panda.reminderlockscreen.utils.LockScreenConfig
 
 
 interface INotification {
@@ -55,12 +56,8 @@ class NotificationManagerImpl(
 
     override fun createNotification(event: String) {
         Log.e("AlarmManagerImpl", "createNotification: ")
-//
 
-        val intentMain = Intent(context, MainActivity::class.java).apply {
-            putExtra("isFromLockScreen", true)
-            putExtra("event", event)
-        }
+        val intentMain = LockScreenConfig.intentProvider.getMainIntent(context, event)
         val pendingIntentMain = PendingIntent.getActivity(
             context,
             0,
@@ -68,9 +65,7 @@ class NotificationManagerImpl(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val reminderIntent = Intent(context, FullscreenReminderActivity::class.java).apply {
-            putExtra("schedule_data", schedule)
-        }
+        val reminderIntent = LockScreenConfig.intentProvider.getFullscreenReminderIntent(context, schedule)
         val pendingIntent = PendingIntent.getActivity(
             context,
             schedule.id,
@@ -83,11 +78,12 @@ class NotificationManagerImpl(
             .setContentTitle(schedule.title)
             .setContentText(schedule.content)
             .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setCategory(NotificationCompat.CATEGORY_ALARM) // Đặt category là CATEGORY_CALL
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setFullScreenIntent(pendingIntent, true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(pendingIntentMain)
             .setAutoCancel(true)
+
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.POST_NOTIFICATIONS
@@ -95,10 +91,10 @@ class NotificationManagerImpl(
         ) {
             return
         }
+
         val notificationManager = createNotificationChannel()
         with(NotificationManagerCompat.from(context)) {
             notificationManager.notify(schedule.id, notification.build())
-
         }
     }
 

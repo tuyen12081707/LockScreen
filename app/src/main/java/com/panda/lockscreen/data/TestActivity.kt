@@ -19,6 +19,10 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.panda.lockscreen.R
 import com.panda.lockscreen.data.prefernces.AppConfigManager
 import com.panda.lockscreen.data.utils.Constants
+import com.panda.reminderlockscreen.notification.Schedule
+import com.panda.reminderlockscreen.presentation.activity.MainActivity
+import com.panda.reminderlockscreen.utils.LockScreenConfig
+import com.panda.reminderlockscreen.utils.LockScreenIntentProvider
 import com.panda.reminderlockscreen.utils.ReminderScheduler
 
 class TestActivity : AppCompatActivity() {
@@ -118,6 +122,21 @@ class TestActivity : AppCompatActivity() {
 
     private fun handleInsertViewModel() {
         Log.d("TAG==", "handleInsertViewModel")
+        LockScreenConfig.init(object : LockScreenIntentProvider {
+            override fun getMainIntent(context: Context, event: String): Intent {
+                return Intent(context, TestActivity::class.java).apply {
+                    putExtra("isFromLockScreen", true)
+                    putExtra("event", event)
+                }
+            }
+
+            override fun getFullscreenReminderIntent(context: Context, schedule: Schedule): Intent {
+                return Intent(context, FullscreenReminderActivity::class.java).apply {
+                    putExtra("schedule_data", schedule)
+                }
+            }
+        })
+
         val listLock = AppConfigManager.getInstance().getLockScreenList()
         listLock.forEach {
             Log.d("TAG==", it.title)

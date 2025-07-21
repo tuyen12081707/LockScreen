@@ -18,10 +18,10 @@ class AlarmReminderBroadcastCast : BroadcastReceiver() {
             context.getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
         val isDeviceLockedOrNotInteractive =
             !powerManager.isInteractive || keyguardManager.isKeyguardLocked
-//        if (!isDeviceLockedOrNotInteractive) {
-//            Log.d("FullScreenReminderReceiver", "Device is interactive and not locked, skipping full-screen intent")
-//            return
-//        }
+        if (!isDeviceLockedOrNotInteractive) {
+            Log.d("FullScreenReminderReceiver", "Device is interactive and not locked, skipping full-screen intent")
+            return
+        }
         Log.d(
             "AlarmManagerImpl",
             "Device locked or not interactive: $isDeviceLockedOrNotInteractive"
