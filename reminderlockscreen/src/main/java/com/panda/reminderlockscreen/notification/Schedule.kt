@@ -10,14 +10,15 @@ sealed class Schedule(
     open val title: String,
     open val content: String,
     open val imageUrl: String,
-    open val backgroundUrl:String,
+    open val backgroundUrl: String,
     open val buttonContent: String,
     open val repeatTimes: Int,
     open val hour: Int,
     open val minute: Int,
     open val units: Int,
     @DrawableRes open val imageBackup: Int? = null,
-    open val event:String,
+    open val event: String,
+    open val type: Int,
 ) : Parcelable {
 
     @Parcelize
@@ -35,9 +36,22 @@ sealed class Schedule(
         @DrawableRes override val imageBackup: Int? = null,
         val intervals: Int,
         val createdAt: Long = System.currentTimeMillis(),
-        override val event:String
+        override val event: String,
+        override val type: Int
     ) : Schedule(
-        id, title, content, imageUrl,backgroundUrl, buttonContent = buttonContent, repeatTimes, hour, minute, units, imageBackup,event
+        id,
+        title,
+        content,
+        imageUrl,
+        backgroundUrl,
+        buttonContent = buttonContent,
+        repeatTimes,
+        hour,
+        minute,
+        units,
+        imageBackup,
+        event,
+        type
     )
 
     @Parcelize
@@ -56,8 +70,21 @@ sealed class Schedule(
         val createdAt: Long = System.currentTimeMillis(),
         override val backgroundUrl: String,
         override val event: String,
-    ): Schedule(
-        id, title, content, imageUrl,backgroundUrl, buttonContent = buttonContent, repeatTimes, hour, minute, units, imageBackup,event
+        override val type: Int
+    ) : Schedule(
+        id,
+        title,
+        content,
+        imageUrl,
+        backgroundUrl,
+        buttonContent = buttonContent,
+        repeatTimes,
+        hour,
+        minute,
+        units,
+        imageBackup,
+        event,
+        type
     )
 
     @Parcelize
@@ -75,8 +102,21 @@ sealed class Schedule(
         @DrawableRes override val imageBackup: Int? = null,
         val time: Long,
         override val event: String,
-    ): Schedule(
-        id, title, content, imageUrl,backgroundUrl, buttonContent = buttonContent, repeatTimes, hour, minute, units, imageBackup,event
+        override val type: Int
+    ) : Schedule(
+        id,
+        title,
+        content,
+        imageUrl,
+        backgroundUrl,
+        buttonContent = buttonContent,
+        repeatTimes,
+        hour,
+        minute,
+        units,
+        imageBackup,
+        event,
+        type
     )
 
     @Parcelize
@@ -95,8 +135,21 @@ sealed class Schedule(
         @DrawableRes override val imageBackup: Int? = null,
         val time: Long,
         override val event: String,
+        override val type: Int
     ) : Schedule(
-        id, title, content, imageUrl,backgroundUrl, buttonContent = buttonContent, repeatTimes, hour, minute, units, imageBackup,event
+        id,
+        title,
+        content,
+        imageUrl,
+        backgroundUrl,
+        buttonContent = buttonContent,
+        repeatTimes,
+        hour,
+        minute,
+        units,
+        imageBackup,
+        event,
+        type
     )
 
     @Parcelize
@@ -115,7 +168,20 @@ sealed class Schedule(
         @DrawableRes override val imageBackup: Int? = null,
         val time: Long,
         override val event: String,
+        override val type: Int
     ) : Schedule(
-        id, title, content, imageUrl,backgroundUrl, buttonContent = buttonContent, repeatTimes, hour, minute, units, imageBackup,event
+        id,
+        title,
+        content,
+        imageUrl,
+        backgroundUrl,
+        buttonContent = buttonContent,
+        repeatTimes,
+        hour,
+        minute,
+        units,
+        imageBackup,
+        event,
+        type
     )
 }

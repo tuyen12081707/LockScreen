@@ -42,11 +42,12 @@ class AppConfigManager private constructor(context: Context) : Preferences(conte
                         image = item.optString("image"),
                         day = item.optInt("day"),
                         hour = item.optInt("hour"),
-                        buttonContent = item.optString(""),
+                        buttonContent = item.optString("buttonContent"),
                         mintues = item.optInt("minutes"),
                         type = item.optString("type"),
                         repeatTimes = item.getInt("repeatTimes"),
-                        event = item.optString("event")
+                        event = item.optString("event"),
+                        uiType = item.optInt("uiType")
                     )
                     list.add(lockScreen)
                 }
