@@ -50,7 +50,7 @@
             android:layout_height="@dimen/_32sdp"
             android:layout_marginStart="@dimen/_16sdp"
             android:layout_marginTop="@dimen/_10sdp"
-            android:src="@mipmap/ic_launcher"
+            android:src="@mipmap/ic_launcher_lock"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/roundedCorners"
