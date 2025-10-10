@@ -31,10 +31,13 @@ object ReminderScheduler {
             units = if (hour >= 12) Constants.TimeUnit.PM else Constants.TimeUnit.AM
         }
 
-        val isMonth =
-            listLockScreen.any { it.day > 7 || it.type == Constants.TypeLockScreen.TYPE_MONTH }
+        // Kiểm tra xem có item nào là type theo tháng không
+        val isMonth = listLockScreen.any {
+            it.day > 7 || it.type == Constants.TypeLockScreen.TYPE_MONTH
+        }
 
         if (isMonth) {
+            // 🔹 Nếu là loại theo ngày trong tháng
             listLockScreen.forEach { item ->
                 val schedule = createLockScreenByDayOfMonthSchedule(
                     id = item.id,
@@ -54,40 +57,8 @@ object ReminderScheduler {
                 setReminder(context, schedule)
             }
         } else {
-            val duplicatedDays = listLockScreen
-                .filter { it.day in 1..7 }
-                .groupingBy { it.day }
-                .eachCount()
-                .filter { it.value > 1 }
-                .keys
-
-            duplicatedDays.forEach { day ->
-                val itemsInDay = listLockScreen.filter { it.day == day }
-                val item = itemsInDay.random()
-
-                val schedule = createLockScreenByDayOfWeekSchedule(
-                    id = item.id,
-                    hour = if (item.hour != -1) item.hour else currentHour,
-                    minute = if (item.mintues != -1) item.mintues else currentMinute,
-                    units = units,
-                    title = item.title,
-                    content = item.content,
-                    imageUrl = item.image,
-                    repeatTimes = item.repeatTimes,
-                    buttonContent = item.buttonContent,
-                    days = item.day,
-                    createdAt = System.currentTimeMillis(),
-                    backgroundUrl = item.backgroundUrl,
-                    type = item.uiType
-                )
-                setReminder(context, schedule)
-            }
-
-            val uniqueDaysItems = listLockScreen.filter {
-                it.day in 1..7 && it.day !in duplicatedDays
-            }
-
-            uniqueDaysItems.forEach { item ->
+            // 🔹 Nếu là loại theo ngày trong tuần (1–7)
+            listLockScreen.forEach { item ->
                 val schedule = createLockScreenByDayOfWeekSchedule(
                     id = item.id,
                     hour = if (item.hour != -1) item.hour else currentHour,
@@ -107,6 +78,7 @@ object ReminderScheduler {
             }
         }
     }
+
 
     private fun setReminder(context: Context, schedule: Schedule) {
         val alarmManager = AlarmManagerImpl(context)
