@@ -68,15 +68,20 @@ class NotificationManagerImpl(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val reminderIntent =
-            LockScreenConfig.intentProvider?.getFullscreenReminderIntent(context, schedule)
-                ?: Intent(context, FullscreenReminderActivity::class.java)
+        val reminderIntent = LockScreenConfig.intentProvider
+            ?.getFullscreenReminderIntent(context, schedule)
+            ?: Intent(context, FullscreenReminderActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                putExtra("schedule_data", schedule)
+            }
+
         val pendingIntent = PendingIntent.getActivity(
             context,
             schedule.id,
             reminderIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_app)
