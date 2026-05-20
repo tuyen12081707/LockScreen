@@ -10,7 +10,7 @@ Thư viện hỗ trợ tạo lịch nhắc toàn màn hình (FullScreen Alarm) t
 ### 1. Thêm vào `build.gradle.kts` của `:app`
 
 ```kotlin
-implementation("com.github.tuyen12081707:LockScreen:1.0.3")
+implementation("com.github.tuyen12081707:LockScreen:1.0.8")
 ```
 
 > 🔧 Yêu cầu `targetSdk = 35`
