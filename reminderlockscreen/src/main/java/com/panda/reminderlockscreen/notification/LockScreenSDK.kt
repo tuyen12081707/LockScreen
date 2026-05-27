@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import org.json.JSONArray
 import org.json.JSONException
+import java.util.Calendar
 
 object LockScreenSDK {
 
@@ -11,12 +12,6 @@ object LockScreenSDK {
     private const val PREF_NAME = "LockScreenSDK_Prefs"
     private const val TARGET_ACTIVITY_KEY = "TARGET_ACTIVITY_CLASS"
 
-    /**
-     * Khởi tạo SDK.
-     * @param context Context của App
-     * @param remoteConfigJson Chuỗi JSON cấu hình lấy từ Firebase (hoặc API)
-     * @param targetActivity Class của màn hình muốn mở khi user bấm "Bắt đầu"
-     */
     fun init(
         context: Context,
         remoteConfigJson: String,
@@ -27,13 +22,11 @@ object LockScreenSDK {
             return
         }
 
-        // 1. Lưu lại Activity đích để mở sau này
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             .edit()
             .putString(TARGET_ACTIVITY_KEY, targetActivity.name)
             .apply()
 
-        // 2. Parse JSON thành List<Schedule>
         val schedules = parseJsonToSchedules(remoteConfigJson)
 
         if (schedules.isEmpty()) {
@@ -41,13 +34,14 @@ object LockScreenSDK {
             return
         }
 
-        // 3. Gọi báo thức
         val alarmManager = AlarmManagerImpl(context)
         schedules.forEach { schedule ->
             Log.d(
                 TAG,
                 "Đang lên lịch cho: ${schedule.title} - Loại: ${schedule.javaClass.simpleName}"
             )
+            // FIX 2: Bổ sung logic Hủy báo thức cũ trước khi set cái mới
+            alarmManager.cancel(schedule)
             alarmManager.schedule(schedule)
         }
     }
@@ -55,6 +49,11 @@ object LockScreenSDK {
     private fun parseJsonToSchedules(jsonString: String): List<Schedule> {
         val list = mutableListOf<Schedule>()
         try {
+            // FIX 1: Lấy giờ phút hiện tại để dự phòng (Fallback)
+            val now = Calendar.getInstance()
+            val currentHour = now.get(Calendar.HOUR_OF_DAY)
+            val currentMinute = now.get(Calendar.MINUTE)
+
             val jsonArray = JSONArray(jsonString)
             for (i in 0 until jsonArray.length()) {
                 val item = jsonArray.getJSONObject(i)
@@ -66,12 +65,18 @@ object LockScreenSDK {
                 val imageUrl = item.optString("image", "")
 
                 val day = item.optInt("day", 1)
-
                 val intervals = item.optInt("intervals", 0)
 
-                val hour = item.optInt("hour", 0)
-                val minute = item.optInt("minutes", 0)
-                val units = item.optInt("units", 0) // AM/PM tuỳ logic của ông
+                // Lấy giờ phút từ JSON, nếu Firebase truyền -1 thì lấy giờ hiện tại
+                val jsonHour = item.optInt("hour", 0)
+                val jsonMinute = item.optInt("minutes", 0)
+
+                val hour = if (jsonHour != -1) jsonHour else currentHour
+                val minute = if (jsonMinute != -1) jsonMinute else currentMinute
+
+                // Tự động tính toán AM/PM dựa vào giờ cuối cùng
+                val units = if (hour < 12) 0 else 1 // Giả định 0 là AM, 1 là PM theo logic của ông
+
                 val buttonContent = item.optString("buttonContent", "Bắt đầu")
                 val type = item.optString("type", "")
                 val repeatTimes = item.optInt("repeatTimes", 1)
