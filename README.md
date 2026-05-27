@@ -9,7 +9,7 @@ Thư viện hỗ trợ tạo lịch nhắc toàn màn hình (FullScreen Alarm) t
 ### 1. Thêm vào `build.gradle.kts` của `:app`
 
 ```kotlin
-implementation("com.github.tuyen12081707:LockScreen:1.0.9")
+implementation("com.github.tuyen12081707:LockScreen:1.1.0")
 ```
 
 > 🔧 Yêu cầu `targetSdk = 35`
@@ -60,30 +60,36 @@ Copy cấu trúc mảng dưới đây làm giá trị cho key `remote_lock_scree
 [
   {
     "id": 1,
-    "title": "Nhắc nhở Thứ 2",
-    "content": "Hôm nay bạn cần học gì?",
+    "title": "Nhắc nhở Tiếng Anh",
+    "content": "Đến giờ luyện nghe rồi!",
     "backgroundUrl": "[https://example.com/bg1.png](https://example.com/bg1.png)",
     "image": "[https://example.com/img1.png](https://example.com/img1.png)",
+    "type": "week",
     "day": 2,
     "hour": 7,
-    "minutes": 0,
-    "buttonContent": "Bắt đầu",
-    "type": "week",
+    "minutes": 30,
+    "intervals": 0,
+    "buttonContent": "Học ngay",
     "repeatTimes": 1,
-    "event": "monday_study"
+    "event": "english_listening"
   }
 ]
 ```
+#### 📌 Giải nghĩa các trường dữ liệu (Cực kỳ quan trọng):
 
-#### 📌 Ghi chú ý nghĩa các trường:
-| Trường | Dữ liệu | Ý nghĩa |
+| Trường | Kiểu dữ liệu | Mô tả & Cách dùng |
 |---|---|---|
-| `type` | `"week"` / `"month"` | Chu kỳ lặp theo tuần hoặc theo tháng. |
-| `day` | `1-7` hoặc `1-31` | Nếu là week: 1 (CN) đến 7 (Thứ 7). Nếu là month: Ngày trong tháng. |
-| `repeatTimes` | `1` / `0` | `1`: Lặp lại mãi mãi. `0`: Chỉ nhắc 1 lần duy nhất rồi hủy. |
-| `event` | `String` | Sự kiện trả về App để xử lý Analytics hoặc Deep routing. |
+| **`type`** | `String` | Xác định loại báo thức. Hỗ trợ 5 loại: <br>• `"week"`: Lặp theo thứ trong tuần.<br>• `"month"`: Lặp theo ngày trong tháng.<br>• `"day"`: Báo thức 1 lần trong ngày.<br>• `"each_day"`: Báo thức lặp lại mỗi `X` ngày.<br>• `"remote"`: Báo thức linh hoạt (theo logic remote). |
+| **`day`** | `Int` | **Nếu `type` = "week":** <br>`1` = Chủ Nhật, `2` = Thứ 2, `3` = Thứ 3, ..., `7` = Thứ 7.<br>**Nếu `type` = "month":**<br>Từ `1` đến `31` (Ngày trong tháng). |
+| **`intervals`**| `Int` | Chỉ dùng khi `type` = `"each_day"` hoặc `"remote"`. <br>Đại diện cho số ngày giãn cách. Ví dụ: `intervals = 2` nghĩa là 2 ngày báo 1 lần. |
+| **`hour` / `minutes`**| `Int` | Giờ (0-23) và Phút (0-59) báo thức sẽ kêu. |
+| **`repeatTimes`** | `Int` | `1`: Lặp lại chu kỳ (mãi mãi).<br>`0`: Chỉ nhắc 1 lần duy nhất rồi tự hủy. |
+| **`event`** | `String` | Mã sự kiện (Event Code) được truyền ngược về App khi user bấm nút mở. Dùng để tracking Firebase hoặc điều hướng (DeepLink). |
+| `id` | `Int` | ID định danh độc nhất của báo thức (để update hoặc cancel sau này). |
+| `buttonContent`| `String` | Chữ hiển thị trên nút bấm (Ví dụ: "Mở app", "Làm bài", "Bắt đầu"). |
 
----
+
+
 
 ### 5. Xử lý sự kiện (Event Tracking) khi mở App từ Màn hình khóa
 
@@ -155,6 +161,10 @@ Thư viện hỗ trợ bạn tự thiết kế lại 100% giao diện màn hình
   * `@id/imgAddPhoto` (ImageView - Ảnh minh họa)
   * `@id/btnOpenApp` (View/Button - Nút bấm mở app)
   * `@id/btnClose` (View/Button - Nút tắt báo thức)
+### 7. Các log event có sẵn trong app
+- LockScreenSDK để check init có thành công không
+- AlarmManagerImpl để check thời gian alarm record trả về nhé
+
 ---
 
 ## 📧 Liên hệ hỗ trợ

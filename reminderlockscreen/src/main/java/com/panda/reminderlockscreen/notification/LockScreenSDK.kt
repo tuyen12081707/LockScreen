@@ -44,7 +44,10 @@ object LockScreenSDK {
         // 3. Gọi báo thức
         val alarmManager = AlarmManagerImpl(context)
         schedules.forEach { schedule ->
-            Log.d(TAG, "Đang lên lịch cho: ${schedule.title} - Loại: ${schedule.javaClass.simpleName}")
+            Log.d(
+                TAG,
+                "Đang lên lịch cho: ${schedule.title} - Loại: ${schedule.javaClass.simpleName}"
+            )
             alarmManager.schedule(schedule)
         }
     }
@@ -61,9 +64,14 @@ object LockScreenSDK {
                 val content = item.optString("content", "")
                 val backgroundUrl = item.optString("backgroundUrl", "")
                 val imageUrl = item.optString("image", "")
-                val day = item.optInt("day", 1) // Ngày trong tuần hoặc ngày trong tháng
+
+                val day = item.optInt("day", 1)
+
+                val intervals = item.optInt("intervals", 0)
+
                 val hour = item.optInt("hour", 0)
                 val minute = item.optInt("minutes", 0)
+                val units = item.optInt("units", 0) // AM/PM tuỳ logic của ông
                 val buttonContent = item.optString("buttonContent", "Bắt đầu")
                 val type = item.optString("type", "")
                 val repeatTimes = item.optInt("repeatTimes", 1)
@@ -72,19 +80,62 @@ object LockScreenSDK {
 
                 val schedule = when (type.lowercase()) {
                     "week" -> Schedule.ScheduleWeek(
-                        id = id, title = title, content = content, imageUrl = imageUrl,
-                        backgroundUrl = backgroundUrl, repeatTimes = repeatTimes, hour = hour,
-                        minute = minute, dayOfWeek = day, units = 0, buttonContent = buttonContent,
-                        time = timeNow, event = event, type = 1 // Giả định type=1 là week
+                        id = id,
+                        title = title,
+                        content = content,
+                        imageUrl = imageUrl,
+                        backgroundUrl = backgroundUrl,
+                        repeatTimes = repeatTimes,
+                        hour = hour,
+                        minute = minute,
+                        dayOfWeek = day,
+                        units = units,
+                        buttonContent = buttonContent,
+                        time = timeNow,
+                        event = event,
+                        type = 1
                     )
+
                     "month" -> Schedule.ScheduleMonth(
+                        id = id,
+                        title = title,
+                        content = content,
+                        imageUrl = imageUrl,
+                        backgroundUrl = backgroundUrl,
+                        repeatTimes = repeatTimes,
+                        hour = hour,
+                        minute = minute,
+                        dayOfMonth = day,
+                        units = units,
+                        buttonContent = buttonContent,
+                        time = timeNow,
+                        event = event,
+                        type = 2
+                    )
+
+                    "day" -> Schedule.ScheduleDay(
                         id = id, title = title, content = content, imageUrl = imageUrl,
                         backgroundUrl = backgroundUrl, repeatTimes = repeatTimes, hour = hour,
-                        minute = minute, dayOfMonth = day, units = 0, buttonContent = buttonContent,
-                        time = timeNow, event = event, type = 2 // Giả định type=2 là month
+                        minute = minute, units = units, buttonContent = buttonContent,
+                        time = timeNow, event = event, type = 3
                     )
+
+                    "each_day" -> Schedule.ScheduleEachDay(
+                        id = id, title = title, content = content, imageUrl = imageUrl,
+                        backgroundUrl = backgroundUrl, repeatTimes = repeatTimes, hour = hour,
+                        minute = minute, units = units, buttonContent = buttonContent,
+                        intervals = intervals, createdAt = timeNow, event = event, type = 4
+                    )
+
+                    "remote" -> Schedule.ScheduleRemote(
+                        id = id, title = title, content = content, imageUrl = imageUrl,
+                        backgroundUrl = backgroundUrl, repeatTimes = repeatTimes, hour = hour,
+                        minute = minute, units = units, buttonContent = buttonContent,
+                        intervals = intervals, createdAt = timeNow, event = event, type = 5
+                    )
+
                     else -> {
-                        Log.e(TAG, "Type không hợp lệ: $type")
+                        Log.e(TAG, "Type không hợp lệ trong JSON: $type")
                         null
                     }
                 }
