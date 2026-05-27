@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import kotlinx.parcelize.Parcelize
 
+
 @Parcelize
 sealed class Schedule(
     open var id: Int,
@@ -19,6 +20,8 @@ sealed class Schedule(
     @DrawableRes open val imageBackup: Int? = null,
     open val event: String,
     open val type: Int,
+    // 2. Thêm trường displayType vào class cha
+    open val displayType: String
 ) : Parcelable {
 
     @Parcelize
@@ -37,21 +40,12 @@ sealed class Schedule(
         val intervals: Int,
         val createdAt: Long = System.currentTimeMillis(),
         override val event: String,
-        override val type: Int
+        override val type: Int,
+        // 3. Thêm trường displayType vào các class con
+        override val displayType: String
     ) : Schedule(
-        id,
-        title,
-        content,
-        imageUrl,
-        backgroundUrl,
-        buttonContent = buttonContent,
-        repeatTimes,
-        hour,
-        minute,
-        units,
-        imageBackup,
-        event,
-        type
+        id, title, content, imageUrl, backgroundUrl, buttonContent, repeatTimes,
+        hour, minute, units, imageBackup, event, type, displayType
     )
 
     @Parcelize
@@ -70,21 +64,11 @@ sealed class Schedule(
         val createdAt: Long = System.currentTimeMillis(),
         override val backgroundUrl: String,
         override val event: String,
-        override val type: Int
+        override val type: Int,
+        override val displayType: String
     ) : Schedule(
-        id,
-        title,
-        content,
-        imageUrl,
-        backgroundUrl,
-        buttonContent = buttonContent,
-        repeatTimes,
-        hour,
-        minute,
-        units,
-        imageBackup,
-        event,
-        type
+        id, title, content, imageUrl, backgroundUrl, buttonContent, repeatTimes,
+        hour, minute, units, imageBackup, event, type, displayType
     )
 
     @Parcelize
@@ -102,21 +86,11 @@ sealed class Schedule(
         @DrawableRes override val imageBackup: Int? = null,
         val time: Long,
         override val event: String,
-        override val type: Int
+        override val type: Int,
+        override val displayType: String
     ) : Schedule(
-        id,
-        title,
-        content,
-        imageUrl,
-        backgroundUrl,
-        buttonContent = buttonContent,
-        repeatTimes,
-        hour,
-        minute,
-        units,
-        imageBackup,
-        event,
-        type
+        id, title, content, imageUrl, backgroundUrl, buttonContent, repeatTimes,
+        hour, minute, units, imageBackup, event, type, displayType
     )
 
     @Parcelize
@@ -135,21 +109,11 @@ sealed class Schedule(
         @DrawableRes override val imageBackup: Int? = null,
         val time: Long,
         override val event: String,
-        override val type: Int
+        override val type: Int,
+        override val displayType: String
     ) : Schedule(
-        id,
-        title,
-        content,
-        imageUrl,
-        backgroundUrl,
-        buttonContent = buttonContent,
-        repeatTimes,
-        hour,
-        minute,
-        units,
-        imageBackup,
-        event,
-        type
+        id, title, content, imageUrl, backgroundUrl, buttonContent, repeatTimes,
+        hour, minute, units, imageBackup, event, type, displayType
     )
 
     @Parcelize
@@ -168,20 +132,10 @@ sealed class Schedule(
         @DrawableRes override val imageBackup: Int? = null,
         val time: Long,
         override val event: String,
-        override val type: Int
+        override val type: Int,
+        override val displayType: String
     ) : Schedule(
-        id,
-        title,
-        content,
-        imageUrl,
-        backgroundUrl,
-        buttonContent = buttonContent,
-        repeatTimes,
-        hour,
-        minute,
-        units,
-        imageBackup,
-        event,
-        type
+        id, title, content, imageUrl, backgroundUrl, buttonContent, repeatTimes,
+        hour, minute, units, imageBackup, event, type, displayType
     )
 }

@@ -14,12 +14,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.panda.reminderlockscreen.R
+import com.panda.reminderlockscreen.model.DisplayType
 import com.panda.reminderlockscreen.presentation.activity.MainActivity
 
 
 interface INotification {
 
-    fun createNotification(event: String)
+    fun createNotification(schedule: Schedule)
     fun cancelNotification()
 }
 
@@ -53,7 +54,7 @@ class NotificationManagerImpl(
         return notificationManager
     }
 
-    override fun createNotification(event: String) {
+    override fun createNotification(schedule: Schedule) {
         Log.e("AlarmManagerImpl", "createNotification: ")
 //
 
@@ -70,7 +71,7 @@ class NotificationManagerImpl(
             context.packageManager.getLaunchIntentForPackage(context.packageName) ?: Intent()
         }.apply {
             putExtra("isFromLockScreen", true)
-            putExtra("event", event)
+            putExtra("event", schedule.event)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
         val pendingIntentMain = PendingIntent.getActivity(
@@ -90,16 +91,20 @@ class NotificationManagerImpl(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_app)
             .setContentTitle(schedule.title)
             .setContentText(schedule.content)
             .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setCategory(NotificationCompat.CATEGORY_ALARM) // Đặt category là CATEGORY_CALL
-            .setFullScreenIntent(pendingIntent, true)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(pendingIntentMain)
             .setAutoCancel(true)
+
+        if (schedule.displayType == DisplayType.FULL_SCREEN.name) {
+            notificationBuilder.setFullScreenIntent(pendingIntent, true)
+        }
+
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.POST_NOTIFICATIONS
@@ -107,10 +112,10 @@ class NotificationManagerImpl(
         ) {
             return
         }
+
         val notificationManager = createNotificationChannel()
         with(NotificationManagerCompat.from(context)) {
-            notificationManager.notify(schedule.id, notification.build())
-
+            notificationManager.notify(schedule.id, notificationBuilder.build())
         }
     }
 
