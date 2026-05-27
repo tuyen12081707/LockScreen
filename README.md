@@ -1,8 +1,27 @@
+# 📱 LockScreen Reminder SDK
+
+Thư viện hỗ trợ tạo lịch nhắc toàn màn hình (FullScreen Alarm) theo chu kỳ **tuần** hoặc **tháng** bằng JSON cấu hình đơn giản.
+
 ---
 
 ## ✅ TÍCH HỢP THƯ VIỆN
 
-🔧 Yêu cầu targetSdk = 352. Khai báo quyền trong AndroidManifest.xmlĐể thư viện có thể bật sáng màn hình và hiển thị giao diện đè lên màn hình khóa một cách hợp lệ trên các bản Android mới, bạn bắt buộc phải thêm các quyền sau:XML<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+### 1. Thêm vào `build.gradle.kts` của `:app`
+
+```kotlin
+implementation("com.github.tuyen12081707:LockScreen:1.0.8")
+```
+
+> 🔧 Yêu cầu `targetSdk = 35`
+
+---
+
+### 2. Khai báo quyền trong `AndroidManifest.xml`
+
+Để thư viện có thể bật sáng màn hình và hiển thị giao diện đè lên màn hình khóa một cách hợp lệ trên các bản Android mới, bạn bắt buộc phải thêm các quyền sau:
+
+```xml
+<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
 <uses-permission android:name="android.permission.WAKE_LOCK" />
 <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
@@ -10,7 +29,14 @@
 <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
 <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-3. Tạo file cấu hình assets/lockscreen.jsonJSON[
+```
+
+---
+
+### 3. Tạo file cấu hình `assets/lockscreen.json`
+
+```json
+[
   {
     "id": 1,
     "title": "Nhắc nhở Thứ 2",
@@ -26,7 +52,21 @@
     "event": "monday_study"
   }
 ]
-📌 Gợi ý cấu hình:Số lượng nội dungtyperepeatTimesGhi chú7"week"1Lặp lại theo tuần30"month"1Lặp lại theo thángTuỳ chỉnh"week"/"month"0Không lặp lại, chỉ 1 lần4. Gọi Hàm ReminderScheduler để lên lịch nhắcKotlinval listLock = AppConfigManager.getInstance().getLockScreenList()
+```
+
+#### 📌 Gợi ý cấu hình:
+| Số lượng nội dung | `type`  | `repeatTimes` | Ghi chú                                  |
+|-------------------|---------|----------------|----------------------------------|
+| 7                 | "week"  | 1              | Lặp lại theo tuần                |
+| 30                | "month" | 1              | Lặp lại theo tháng               |
+| Tuỳ chỉnh         | "week"/"month" | 0 | Không lặp lại, chỉ 1 lần         |
+
+---
+
+### 4. Gọi Hàm ReminderScheduler để lên lịch nhắc
+
+```kotlin
+val listLock = AppConfigManager.getInstance().getLockScreenList()
 
 listLock.forEach {
     Log.d("AlarmManagerImpl", "Lên lịch cho: ${it.title}")
@@ -36,7 +76,16 @@ ReminderScheduler.setupReminders(
     context = this,
     listLockScreen = listLock
 )
-5. Khởi tạo FullscreenReminderActivityTạo class hiển thị màn hình khóa như bên dưới:Kotlinclass FullscreenReminderActivity : AppCompatActivity() {
+```
+
+---
+
+### 5. Khởi tạo `FullscreenReminderActivity`
+
+Tạo class hiển thị màn hình khóa như bên dưới:
+
+```kotlin
+class FullscreenReminderActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFullScreenReminderBinding
     private var schedule: Schedule? = null
 
@@ -141,14 +190,26 @@ ReminderScheduler.setupReminders(
         startActivity(intent)
     }
 }
-Và khai báo Activity này trong AndroidManifest.xml (Kèm theme Transparent để chuyển cảnh mượt hơn):XML<activity 
+```
+
+Và khai báo Activity này trong `AndroidManifest.xml` (Kèm theme Transparent để chuyển cảnh mượt hơn):
+
+```xml
+<activity 
     android:name=".data.FullscreenReminderActivity"
     android:exported="true"
     android:launchMode="singleTask"
     android:screenOrientation="portrait"
     android:theme="@style/Theme.Transparent"
     android:showOnLockScreen="true" />
-6. Hàm đọc dữ liệu từ JSONKotlinfun getLockScreenList(): ArrayList<LockScreen> {
+```
+
+---
+
+### 6. Hàm đọc dữ liệu từ JSON
+
+```kotlin
+fun getLockScreenList(): ArrayList<LockScreen> {
     val list = ArrayList<LockScreen>()
     try {
         val json = context.assets.open("lockscreen.json").bufferedReader().use { it.readText() }
@@ -177,4 +238,22 @@ Và khai báo Activity này trong AndroidManifest.xml (Kèm theme Transparent đ
     }
     return list
 }
-📌 Ghi chú quan trọngday:Với type = "week": từ 1 (CN) đến 7 (Thứ 7)Với type = "month": từ 1 đến 31repeatTimes = 1: nhắc lại (tuần/tháng).repeatTimes = 0: chỉ nhắc 1 lần duy nhất.📧 Liên hệ hỗ trợNếu bạn gặp lỗi hoặc cần tuỳ chỉnh thêm, hãy tạo issue hoặc liên hệ trực tiếp.Viết bởi tuyen12081707 – Vui lòng star repo nếu thấy hữu ích! 🌟
+```
+
+---
+
+## 📌 Ghi chú quan trọng
+
+- `day`:
+    - Với `type = "week"`: từ 1 (CN) đến 7 (Thứ 7)
+    - Với `type = "month"`: từ 1 đến 31
+- `repeatTimes = 1`: nhắc lại (tuần/tháng).
+- `repeatTimes = 0`: chỉ nhắc 1 lần duy nhất.
+
+---
+
+## 📧 Liên hệ hỗ trợ
+
+Nếu bạn gặp lỗi hoặc cần tuỳ chỉnh thêm, hãy tạo issue hoặc liên hệ trực tiếp.
+
+> Viết bởi [tuyen12081707](https://github.com/tuyen12081707) – Vui lòng star repo nếu thấy hữu ích! 🌟
