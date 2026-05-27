@@ -1,5 +1,12 @@
-📱 LockScreen Reminder SDKThư viện hỗ trợ tạo lịch nhắc toàn màn hình (FullScreen Alarm) theo chu kỳ tuần hoặc tháng bằng JSON cấu hình đơn giản.✅ TÍCH HỢP THƯ VIỆN1. Thêm vào build.gradle.kts của :appKotlinimplementation("com.github.tuyen12081707:LockScreen:1.0.8")
-🔧 Yêu cầu targetSdk = 352. Khai báo quyền trong AndroidManifest.xmlĐể thư viện có thể bật sáng màn hình và hiển thị giao diện đè lên màn hình khóa một cách hợp lệ trên các bản Android mới, ông bắt buộc phải thêm các quyền sau:XML<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+---
+
+## ✅ TÍCH HỢP THƯ VIỆN
+
+### 1. Thêm vào `build.gradle.kts` của `:app`
+
+```kotlin
+implementation("com.github.tuyen12081707:LockScreen:1.0.8")
+🔧 Yêu cầu targetSdk = 352. Khai báo quyền trong AndroidManifest.xmlĐể thư viện có thể bật sáng màn hình và hiển thị giao diện đè lên màn hình khóa một cách hợp lệ trên các bản Android mới, bạn bắt buộc phải thêm các quyền sau:XML<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
 <uses-permission android:name="android.permission.WAKE_LOCK" />
 <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
@@ -12,8 +19,8 @@
     "id": 1,
     "title": "Nhắc nhở Thứ 2",
     "content": "Hôm nay bạn cần học gì?",
-    "backgroundUrl": "https://example.com/bg1.png",
-    "image": "https://example.com/img1.png",
+    "backgroundUrl": "[https://example.com/bg1.png](https://example.com/bg1.png)",
+    "image": "[https://example.com/img1.png](https://example.com/img1.png)",
     "day": 2,
     "hour": 7,
     "minutes": 0,
@@ -111,7 +118,7 @@ ReminderScheduler.setupReminders(
                 .load(it.imageBackup)
                 .placeholder(R.drawable.img_reminder)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
-                .into(binding.imgAddPhoto) // Lưu ý: Chỗ này ông đang load chung vào imgAddPhoto, nhớ check lại ID View nhé
+                .into(binding.imgAddPhoto) 
         }
     }
 
@@ -144,14 +151,8 @@ Và khai báo Activity này trong AndroidManifest.xml (Kèm theme Transparent đ
     android:launchMode="singleTask"
     android:screenOrientation="portrait"
     android:theme="@style/Theme.Transparent"
-    android:showOnLockScreen="true" /> ```
-
----
-
-### 6. Hàm đọc dữ liệu từ JSON
-
-```kotlin
-fun getLockScreenList(): ArrayList<LockScreen> {
+    android:showOnLockScreen="true" />
+6. Hàm đọc dữ liệu từ JSONKotlinfun getLockScreenList(): ArrayList<LockScreen> {
     val list = ArrayList<LockScreen>()
     try {
         val json = context.assets.open("lockscreen.json").bufferedReader().use { it.readText() }
