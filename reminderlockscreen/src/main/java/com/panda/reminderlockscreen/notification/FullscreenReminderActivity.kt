@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.panda.reminderlockscreen.presentation.activity.MainActivity
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -22,55 +21,78 @@ import com.panda.reminderlockscreen.databinding.ActivityFullScreenReminderBindin
 class FullscreenReminderActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFullScreenReminderBinding
     private var schedule: Schedule? = null
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        Log.d("FullScreenReminderReceiver", "onNewIntent called")
-
-        schedule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra("schedule_data", Schedule::class.java)
-        } else {
-            intent.getParcelableExtra("schedule_data")
-        }
-        handleNewIntent()
+        Log.d("FullscreenReminder", "onNewIntent called")
+        updateScheduleFromIntent(intent)
+        setupUI()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFullScreenReminderBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        Log.d("FullScreenReminderReceiver", "onCreate")
-        handleNewIntent()
+
+        updateScheduleFromIntent(intent)
+        setupKeyguardAndWakeLock()
+        setupUI()
+        setupListeners()
+    }
+
+    private fun updateScheduleFromIntent(intent: Intent) {
+        schedule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("schedule_data", Schedule::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra("schedule_data")
+        }
+    }
+
+    private fun setupKeyguardAndWakeLock() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
         } else {
+            @Suppress("DEPRECATION")
             window.addFlags(
                 android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
                         android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
             )
         }
 
-        val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
             keyguardManager.requestDismissKeyguard(this, null)
         }
+    }
 
-
+    private fun setupUI() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val currentDate = LocalDate.now()
-            val formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd")
-            val formattedDate = currentDate.format(formatter)
-            binding.tvDay.text = formattedDate
+            binding.tvDay.text = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, MMMM dd"))
         } else {
-            val currentDate = Date()
-            val formatter = SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault())
-            val formattedDate = formatter.format(currentDate)
-            binding.tvDay.text = formattedDate
+            binding.tvDay.text = SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault()).format(Date())
         }
 
+        schedule?.let {
+            binding.tvTitle.text = it.title
+            binding.tvSubTitle.text = it.content
+            binding.btnOpenApp.text = it.buttonContent // Tối ưu thêm việc lấy text button
+
+            if (it.imageUrl.isNotBlank()) {
+                Glide.with(this)
+                    .load(it.imageUrl.trim().toUri())
+                    .placeholder(R.drawable.img_reminder)
+                    .diskCacheStrategy(DiskCacheStrategy.DATA)
+                    .into(binding.imgAddPhoto)
+            }
+        }
+    }
+
+    private fun setupListeners() {
         binding.btnOpenApp.setOnClickListener {
-            Log.d("TAG==",schedule?.event?:"")
-            openMainActivity(1)
+            Log.d("FullscreenReminder", "User clicked open app. Event: ${schedule?.event}")
+            openTargetActivity()
         }
 
         binding.btnClose.setOnClickListener {
@@ -78,49 +100,50 @@ class FullscreenReminderActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleNewIntent() {
-        schedule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra("schedule_data", Schedule::class.java)
-        } else {
-            intent.getParcelableExtra("schedule_data")
+    private fun openTargetActivity() {
+        // 1. Lấy Class name đã lưu lúc init
+        val prefs = getSharedPreferences("LockScreenSDK_Prefs", Context.MODE_PRIVATE)
+        val targetClassName = prefs.getString("TARGET_ACTIVITY_CLASS", null)
+
+        var targetIntent: Intent? = null
+
+        if (!targetClassName.isNullOrBlank()) {
+            try {
+                val clazz = Class.forName(targetClassName)
+                targetIntent = Intent(this, clazz)
+            } catch (e: ClassNotFoundException) {
+                Log.e("FullscreenReminder", "Không tìm thấy Class: $targetClassName")
+            }
         }
-        schedule?.let {
-            binding.tvTitle.text = it.title
-            binding.tvSubTitle.text = it.content
-            val imageUrl = it.imageUrl.trim().toUri()
-            Glide.with(binding.imgAddPhoto)
-                .load(imageUrl)
-                .placeholder(R.drawable.img_reminder)
-                .diskCacheStrategy(DiskCacheStrategy.DATA)
-                .into(binding.imgAddPhoto)
-//            Glide.with(binding.main)
-//                .load(it.imageBackup)
-//                .placeholder(R.drawable.img_reminder)
-//                .diskCacheStrategy(DiskCacheStrategy.DATA)
-//                .into(binding.imgAddPhoto)
+
+        // Fallback: Tìm Launcher Activity nếu không có targetClass
+        if (targetIntent == null) {
+            targetIntent = packageManager.getLaunchIntentForPackage(packageName)
+        }
+
+        targetIntent?.let {
+            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            it.putExtra("isFromLockScreen", true)
+            it.putExtra("lockscreen_event", schedule?.event)
+
+            finish()
+            startActivity(it)
+        } ?: run {
+            finishAffinity()
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Xóa các cờ liên quan đến màn hình khóa và bật màn hình
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(false)
             setTurnScreenOn(false)
         } else {
+            @Suppress("DEPRECATION")
             window.clearFlags(
                 android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
                         android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
             )
         }
-    }
-
-    private fun openMainActivity(source: Int) {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra("isFromLockScreen", true)
-        }
-        finish()
-        startActivity(intent)
     }
 }

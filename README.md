@@ -1,6 +1,6 @@
 # 📱 LockScreen Reminder SDK
 
-Thư viện hỗ trợ tạo lịch nhắc toàn màn hình (FullScreen Alarm) theo chu kỳ **tuần** hoặc **tháng** bằng JSON cấu hình đơn giản.
+Thư viện hỗ trợ tạo lịch nhắc toàn màn hình (FullScreen Alarm) theo chu kỳ **tuần** hoặc **tháng**. Phiên bản mới đã được tối ưu hóa chuẩn "Plug & Play", hỗ trợ nhận cấu hình động từ **Firebase Remote Config** và tự động quản lý luồng điều hướng màn hình!
 
 ---
 
@@ -9,7 +9,7 @@ Thư viện hỗ trợ tạo lịch nhắc toàn màn hình (FullScreen Alarm) t
 ### 1. Thêm vào `build.gradle.kts` của `:app`
 
 ```kotlin
-implementation("com.github.tuyen12081707:LockScreen:1.0.8")
+implementation("com.github.tuyen12081707:LockScreen:1.1.0")
 ```
 
 > 🔧 Yêu cầu `targetSdk = 35`
@@ -18,7 +18,7 @@ implementation("com.github.tuyen12081707:LockScreen:1.0.8")
 
 ### 2. Khai báo quyền trong `AndroidManifest.xml`
 
-Để thư viện có thể bật sáng màn hình và hiển thị giao diện đè lên màn hình khóa một cách hợp lệ trên các bản Android mới, bạn bắt buộc phải thêm các quyền sau:
+Thư viện đã tự động quản lý `FullscreenReminderActivity` ngầm bên trong. Bạn **KHÔNG CẦN** khai báo Activity nữa, chỉ cần cấp các quyền sau để Android cho phép bật sáng màn hình:
 
 ```xml
 <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
@@ -33,7 +33,31 @@ implementation("com.github.tuyen12081707:LockScreen:1.0.8")
 
 ---
 
-### 3. Tạo file cấu hình `assets/lockscreen.json`
+### 3. Khởi tạo SDK (Sử dụng với Firebase Remote Config)
+
+Bạn không cần tự parse JSON hay xử lý logic rườm rà. Chỉ cần gọi hàm `LockScreenSDK.init()` tại màn hình khởi động (Splash/Main) của app:
+
+```kotlin
+// 1. Lấy chuỗi cấu hình JSON từ Firebase Remote Config (hoặc API của bạn)
+// Ví dụ: Key thiết lập trên Firebase là "remote_lock_screen"
+val jsonRemoteConfig = mFirebaseRemoteConfig.getString("remote_lock_screen")
+
+// 2. Khởi tạo SDK và chỉ định Màn hình muốn mở khi user bấm nút hành động
+LockScreenSDK.init(
+    context = this,
+    remoteConfigJson = jsonRemoteConfig,
+    targetActivity = MainActivity::class.java // Thay bằng Class màn hình đích của bạn
+)
+```
+
+> **💡 Mẹo:** Khi màn hình đích được mở, bạn có thể lấy event của chiến dịch thông qua:
+> `intent.getStringExtra("lockscreen_event")`
+
+---
+
+### 4. Cấu trúc chuỗi JSON (Firebase Remote Config)
+
+Copy cấu trúc mảng dưới đây làm giá trị cho key `remote_lock_screen` trên Firebase:
 
 ```json
 [
@@ -54,201 +78,13 @@ implementation("com.github.tuyen12081707:LockScreen:1.0.8")
 ]
 ```
 
-#### 📌 Gợi ý cấu hình:
-| Số lượng nội dung | `type`  | `repeatTimes` | Ghi chú                                  |
-|-------------------|---------|----------------|----------------------------------|
-| 7                 | "week"  | 1              | Lặp lại theo tuần                |
-| 30                | "month" | 1              | Lặp lại theo tháng               |
-| Tuỳ chỉnh         | "week"/"month" | 0 | Không lặp lại, chỉ 1 lần         |
-
----
-
-### 4. Gọi Hàm ReminderScheduler để lên lịch nhắc
-
-```kotlin
-val listLock = AppConfigManager.getInstance().getLockScreenList()
-
-listLock.forEach {
-    Log.d("AlarmManagerImpl", "Lên lịch cho: ${it.title}")
-}
-
-ReminderScheduler.setupReminders(
-    context = this,
-    listLockScreen = listLock
-)
-```
-
----
-
-### 5. Khởi tạo `FullscreenReminderActivity`
-
-Tạo class hiển thị màn hình khóa như bên dưới:
-
-```kotlin
-class FullscreenReminderActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityFullScreenReminderBinding
-    private var schedule: Schedule? = null
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        Log.d("AlarmManagerImpl", "onNewIntent called")
-
-        schedule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra("schedule_data", Schedule::class.java)
-        } else {
-            intent.getParcelableExtra("schedule_data")
-        }
-        handleNewIntent()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityFullScreenReminderBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        Log.d("AlarmManagerImpl", "onCreate called")
-        
-        handleNewIntent()
-        
-        // Thiết lập cờ để Activity đè lên LockScreen và bật sáng màn hình
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            setShowWhenLocked(true)
-            setTurnScreenOn(true)
-        } else {
-            window.addFlags(
-                android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-                        android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-            )
-        }
-
-        val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            keyguardManager.requestDismissKeyguard(this, null)
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val currentDate = LocalDate.now()
-            val formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd")
-            val formattedDate = currentDate.format(formatter)
-            binding.tvDay.text = formattedDate
-        } else {
-            val currentDate = Date()
-            val formatter = SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault())
-            val formattedDate = formatter.format(currentDate)
-            binding.tvDay.text = formattedDate
-        }
-
-        binding.btnOpenApp.setOnClickListener {
-            Log.d("AlarmManagerImpl", "User clicked open app. Event: ${schedule?.event ?: "N/A"}")
-            openMainActivity(1)
-        }
-
-        binding.btnClose.setOnClickListener {
-            finishAffinity()
-        }
-    }
-
-    private fun handleNewIntent() {
-        schedule?.let {
-            binding.tvTitle.text = it.title
-            binding.tvSubTitle.text = it.content
-            val imageUrl = it.imageUrl.trim().toUri()
-            
-            Glide.with(binding.imgAddPhoto)
-                .load(imageUrl)
-                .placeholder(R.drawable.img_reminder)
-                .diskCacheStrategy(DiskCacheStrategy.DATA)
-                .into(binding.imgAddPhoto)
-                
-            Glide.with(binding.main)
-                .load(it.imageBackup)
-                .placeholder(R.drawable.img_reminder)
-                .diskCacheStrategy(DiskCacheStrategy.DATA)
-                .into(binding.imgAddPhoto) 
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // Xóa các cờ liên quan đến màn hình khóa và bật màn hình
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            setShowWhenLocked(false)
-            setTurnScreenOn(false)
-        } else {
-            window.clearFlags(
-                android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-                        android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-            )
-        }
-    }
-
-    private fun openMainActivity(source: Int) {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra("isFromLockScreen", true)
-        }
-        finish()
-        startActivity(intent)
-    }
-}
-```
-
-Và khai báo Activity này trong `AndroidManifest.xml` (Kèm theme Transparent để chuyển cảnh mượt hơn):
-
-```xml
-<activity 
-    android:name=".data.FullscreenReminderActivity"
-    android:exported="true"
-    android:launchMode="singleTask"
-    android:screenOrientation="portrait"
-    android:theme="@style/Theme.Transparent"
-    android:showOnLockScreen="true" />
-```
-
----
-
-### 6. Hàm đọc dữ liệu từ JSON
-
-```kotlin
-fun getLockScreenList(): ArrayList<LockScreen> {
-    val list = ArrayList<LockScreen>()
-    try {
-        val json = context.assets.open("lockscreen.json").bufferedReader().use { it.readText() }
-        val jsonArray = JSONArray(json)
-
-        for (i in 0 until jsonArray.length()) {
-            val item = jsonArray.getJSONObject(i)
-            val lockScreen = LockScreen(
-                id = item.optInt("id"),
-                title = item.optString("title"),
-                content = item.optString("content"),
-                backgroundUrl = item.optString("backgroundUrl"),
-                image = item.optString("image"),
-                day = item.optInt("day"),
-                hour = item.optInt("hour"),
-                mintues = item.optInt("minutes"),
-                buttonContent = item.optString("buttonContent"),
-                type = item.optString("type"),
-                repeatTimes = item.optInt("repeatTimes"),
-                event = item.optString("event")
-            )
-            list.add(lockScreen)
-        }
-    } catch (e: Exception) {
-        Log.e("AlarmManagerImpl", "Lỗi đọc JSON LockScreen: ${e.message}")
-    }
-    return list
-}
-```
-
----
-
-## 📌 Ghi chú quan trọng
-
-- `day`:
-    - Với `type = "week"`: từ 1 (CN) đến 7 (Thứ 7)
-    - Với `type = "month"`: từ 1 đến 31
-- `repeatTimes = 1`: nhắc lại (tuần/tháng).
-- `repeatTimes = 0`: chỉ nhắc 1 lần duy nhất.
+#### 📌 Ghi chú ý nghĩa các trường:
+| Trường | Dữ liệu | Ý nghĩa |
+|---|---|---|
+| `type` | `"week"` / `"month"` | Chu kỳ lặp theo tuần hoặc theo tháng. |
+| `day` | `1-7` hoặc `1-31` | Nếu là week: 1 (CN) đến 7 (Thứ 7). Nếu là month: Ngày trong tháng. |
+| `repeatTimes` | `1` / `0` | `1`: Lặp lại mãi mãi. `0`: Chỉ nhắc 1 lần duy nhất rồi hủy. |
+| `event` | `String` | Sự kiện trả về App để xử lý Analytics hoặc Deep routing. |
 
 ---
 

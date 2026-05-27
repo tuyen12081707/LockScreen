@@ -57,9 +57,21 @@ class NotificationManagerImpl(
         Log.e("AlarmManagerImpl", "createNotification: ")
 //
 
-        val intentMain = Intent(context, MainActivity::class.java).apply {
+        val prefs = context.getSharedPreferences("LockScreenSDK_Prefs", Context.MODE_PRIVATE)
+        val targetClassName = prefs.getString("TARGET_ACTIVITY_CLASS", null)
+
+        val intentMain = if (!targetClassName.isNullOrBlank()) {
+            try {
+                Intent(context, Class.forName(targetClassName))
+            } catch (e: Exception) {
+                context.packageManager.getLaunchIntentForPackage(context.packageName) ?: Intent()
+            }
+        } else {
+            context.packageManager.getLaunchIntentForPackage(context.packageName) ?: Intent()
+        }.apply {
             putExtra("isFromLockScreen", true)
             putExtra("event", event)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
         val pendingIntentMain = PendingIntent.getActivity(
             context,
