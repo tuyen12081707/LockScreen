@@ -2,10 +2,6 @@
 
 ## ✅ TÍCH HỢP THƯ VIỆN
 
-### 1. Thêm vào `build.gradle.kts` của `:app`
-
-```kotlin
-implementation("com.github.tuyen12081707:LockScreen:1.0.8")
 🔧 Yêu cầu targetSdk = 352. Khai báo quyền trong AndroidManifest.xmlĐể thư viện có thể bật sáng màn hình và hiển thị giao diện đè lên màn hình khóa một cách hợp lệ trên các bản Android mới, bạn bắt buộc phải thêm các quyền sau:XML<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
 <uses-permission android:name="android.permission.WAKE_LOCK" />
