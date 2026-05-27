@@ -1,26 +1,13 @@
+📱 LockScreen Reminder SDKThư viện hỗ trợ tạo lịch nhắc toàn màn hình (FullScreen Alarm) theo chu kỳ tuần hoặc tháng bằng JSON cấu hình đơn giản.✅ TÍCH HỢP THƯ VIỆN1. Thêm vào build.gradle.kts của :appKotlinimplementation("com.github.tuyen12081707:LockScreen:1.0.8")
+🔧 Yêu cầu targetSdk = 352. Khai báo quyền trong AndroidManifest.xmlĐể thư viện có thể bật sáng màn hình và hiển thị giao diện đè lên màn hình khóa một cách hợp lệ trên các bản Android mới, ông bắt buộc phải thêm các quyền sau:XML<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
-# 📱 LockScreen Reminder SDK
+<uses-permission android:name="android.permission.WAKE_LOCK" />
+<uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
-Thư viện hỗ trợ tạo lịch nhắc toàn màn hình (FullScreen Alarm) theo chu kỳ **tuần** hoặc **tháng** bằng JSON cấu hình đơn giản.
+<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
----
-
-## ✅ TÍCH HỢP THƯ VIỆN
-
-### 1. Thêm vào `build.gradle.kts` của `:app`
-
-```kotlin
-implementation("com.github.tuyen12081707:LockScreen:1.0.8")
-```
-
-> 🔧 Yêu cầu `targetSdk = 35`
-
----
-
-### 2. Tạo file cấu hình `assets/lockscreen.json`
-
-```json
-[
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+3. Tạo file cấu hình assets/lockscreen.jsonJSON[
   {
     "id": 1,
     "title": "Nhắc nhở Thứ 2",
@@ -36,43 +23,23 @@ implementation("com.github.tuyen12081707:LockScreen:1.0.8")
     "event": "monday_study"
   }
 ]
-```
-
-#### 📌 Gợi ý cấu hình:
-| Số lượng nội dung | `type`  | `repeatTimes` | Ghi chú                         |
-|-------------------|---------|----------------|----------------------------------|
-| 7                 | "week"  | 1              | Lặp lại theo tuần               |
-| 30                | "month" | 1              | Lặp lại theo tháng              |
-| Tuỳ chỉnh         | "week"/"month" | 0 | Không lặp lại, chỉ 1 lần        |
-
----
-
-### 3. Gọi Hàm ReminderScheduler để lên lịch nhắc:
-
-```kotlin
-val listLock = AppConfigManager.getInstance().getLockScreenList()
+📌 Gợi ý cấu hình:Số lượng nội dungtyperepeatTimesGhi chú7"week"1Lặp lại theo tuần30"month"1Lặp lại theo thángTuỳ chỉnh"week"/"month"0Không lặp lại, chỉ 1 lần4. Gọi Hàm ReminderScheduler để lên lịch nhắcKotlinval listLock = AppConfigManager.getInstance().getLockScreenList()
 
 listLock.forEach {
-    Log.d("TAG==", it.title)
+    Log.d("AlarmManagerImpl", "Lên lịch cho: ${it.title}")
 }
 
 ReminderScheduler.setupReminders(
     context = this,
     listLockScreen = listLock
 )
-```
-
----
-
-### 4. Cần tạo `FullscreenReminderActivity`
-
-```kotlin
-class FullscreenReminderActivity : AppCompatActivity() {
+5. Khởi tạo FullscreenReminderActivityTạo class hiển thị màn hình khóa như bên dưới:Kotlinclass FullscreenReminderActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFullScreenReminderBinding
     private var schedule: Schedule? = null
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        Log.d("FullScreenReminderReceiver", "onNewIntent called")
+        Log.d("AlarmManagerImpl", "onNewIntent called")
 
         schedule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra("schedule_data", Schedule::class.java)
@@ -86,8 +53,11 @@ class FullscreenReminderActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFullScreenReminderBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        Log.d("FullScreenReminderReceiver", "onCreate")
+        Log.d("AlarmManagerImpl", "onCreate called")
+        
         handleNewIntent()
+        
+        // Thiết lập cờ để Activity đè lên LockScreen và bật sáng màn hình
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
@@ -103,7 +73,6 @@ class FullscreenReminderActivity : AppCompatActivity() {
             keyguardManager.requestDismissKeyguard(this, null)
         }
 
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val currentDate = LocalDate.now()
             val formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd")
@@ -117,7 +86,7 @@ class FullscreenReminderActivity : AppCompatActivity() {
         }
 
         binding.btnOpenApp.setOnClickListener {
-            Log.d("TAG==",schedule?.event?:"")
+            Log.d("AlarmManagerImpl", "User clicked open app. Event: ${schedule?.event ?: "N/A"}")
             openMainActivity(1)
         }
 
@@ -127,25 +96,22 @@ class FullscreenReminderActivity : AppCompatActivity() {
     }
 
     private fun handleNewIntent() {
-        schedule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra("schedule_data", Schedule::class.java)
-        } else {
-            intent.getParcelableExtra("schedule_data")
-        }
         schedule?.let {
             binding.tvTitle.text = it.title
             binding.tvSubTitle.text = it.content
             val imageUrl = it.imageUrl.trim().toUri()
+            
             Glide.with(binding.imgAddPhoto)
                 .load(imageUrl)
                 .placeholder(R.drawable.img_reminder)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(binding.imgAddPhoto)
+                
             Glide.with(binding.main)
                 .load(it.imageBackup)
                 .placeholder(R.drawable.img_reminder)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
-                .into(binding.imgAddPhoto)
+                .into(binding.imgAddPhoto) // Lưu ý: Chỗ này ông đang load chung vào imgAddPhoto, nhớ check lại ID View nhé
         }
     }
 
@@ -172,22 +138,17 @@ class FullscreenReminderActivity : AppCompatActivity() {
         startActivity(intent)
     }
 }
-```
-
-#### Thêm vào AndroidManifest.xml:
-
-```xml
-   <activity android:name=".data.FullscreenReminderActivity"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.Transparent"
-            />
-```
+Và khai báo Activity này trong AndroidManifest.xml (Kèm theme Transparent để chuyển cảnh mượt hơn):XML<activity 
+    android:name=".data.FullscreenReminderActivity"
+    android:exported="true"
+    android:launchMode="singleTask"
+    android:screenOrientation="portrait"
+    android:theme="@style/Theme.Transparent"
+    android:showOnLockScreen="true" /> ```
 
 ---
 
-### 5. Hàm đọc dữ liệu từ JSON
+### 6. Hàm đọc dữ liệu từ JSON
 
 ```kotlin
 fun getLockScreenList(): ArrayList<LockScreen> {
@@ -215,27 +176,8 @@ fun getLockScreenList(): ArrayList<LockScreen> {
             list.add(lockScreen)
         }
     } catch (e: Exception) {
-        e.printStackTrace()
+        Log.e("AlarmManagerImpl", "Lỗi đọc JSON LockScreen: ${e.message}")
     }
     return list
 }
-```
-
----
-
-## 📌 Ghi chú quan trọng
-
-- `day`:
-    - Với `type = "week"`: từ 1 (CN) đến 7 (Thứ 7)
-    - Với `type = "month"`: từ 1 đến 31
-
-- `repeatTimes = 1`: nhắc lại (tuần/tháng).
-- `repeatTimes = 0`: chỉ nhắc 1 lần duy nhất.
-
----
-
-## 📧 Liên hệ hỗ trợ
-
-Nếu bạn gặp lỗi hoặc cần tuỳ chỉnh thêm, hãy tạo issue hoặc liên hệ trực tiếp.
-
-> Viết bởi [tuyen12081707](https://github.com/tuyen12081707) – Vui lòng star repo nếu thấy hữu ích! 🌟
+📌 Ghi chú quan trọngday:Với type = "week": từ 1 (CN) đến 7 (Thứ 7)Với type = "month": từ 1 đến 31repeatTimes = 1: nhắc lại (tuần/tháng).repeatTimes = 0: chỉ nhắc 1 lần duy nhất.📧 Liên hệ hỗ trợNếu bạn gặp lỗi hoặc cần tuỳ chỉnh thêm, hãy tạo issue hoặc liên hệ trực tiếp.Viết bởi tuyen12081707 – Vui lòng star repo nếu thấy hữu ích! 🌟
