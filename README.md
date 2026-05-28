@@ -10,7 +10,7 @@ Hỗ trợ tương thích ngược với chuẩn JSON cũ (V1) và tích hợp t
 ### 1. Thêm vào `build.gradle.kts` của `:app`
 
 ```kotlin
-implementation("com.github.tuyen12081707:LockScreen:1.1.7")
+implementation("com.github.tuyen12081707:LockScreen:1.1.8")
 ```
 
 ### 2. Khai báo quyền bắt buộc trong `AndroidManifest.xml`

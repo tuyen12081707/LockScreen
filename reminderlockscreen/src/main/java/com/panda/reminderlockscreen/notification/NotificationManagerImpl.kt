@@ -115,7 +115,7 @@ class NotificationManagerImpl(
 
         val notificationManager = createNotificationChannel()
         with(NotificationManagerCompat.from(context)) {
-            notificationManager.notify(schedule.id, notificationBuilder.build())
+            notificationManager.notify(199999, notificationBuilder.build())
         }
     }
 
@@ -123,7 +123,7 @@ class NotificationManagerImpl(
         val notificationManager = context
             .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        notificationManager.cancel(schedule.id)
+        notificationManager.cancel(199999)
     }
 
 
@@ -147,7 +147,7 @@ class ActionReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         val notificationManager = context?.getSystemService(Context.NOTIFICATION_SERVICE)
         if (notificationManager != null && notificationManager is NotificationManager) {
-            notificationManager.cancel(1999)
+            notificationManager.cancel(199999)
         }
     }
 }

@@ -68,14 +68,18 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
             is Schedule.ScheduleDay -> {
                 val calendar = Calendar.getInstance()
 
-                if (schedule.time > 0L) {
+                val prefs = context.getSharedPreferences("LockScreenSDK_Prefs", Context.MODE_PRIVATE)
+                val activeVersion = prefs.getInt("active_version", 1)
+
+                if (activeVersion == 2 && schedule.time > 0L) {
                     calendar.timeInMillis = schedule.time
                 } else {
                     calendar.set(Calendar.HOUR_OF_DAY, schedule.hour)
                     calendar.set(Calendar.MINUTE, schedule.minute)
                     calendar.set(Calendar.SECOND, 0)
-                    if (calendar.timeInMillis < System.currentTimeMillis()) {
-                        calendar.add(Calendar.DAY_OF_YEAR, 1) // Nhảy sang ngày mai nếu đã qua giờ
+
+                    if (calendar.timeInMillis <= System.currentTimeMillis()) {
+                        calendar.add(Calendar.DAY_OF_YEAR, 1)
                     }
                 }
 
