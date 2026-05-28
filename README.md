@@ -92,17 +92,76 @@ Dành cho các chiến dịch cũ lặp lại theo tuần/tháng tĩnh.
 ```json
 [
   {
-    "id": 1,
-    "title": "Nhắc nhở Thứ 2",
-    "content": "Hôm nay bạn cần học gì?",
-    "type": "week",
-    "day": 2,
-    "hour": 7,
+    "id": 201,
+    "title": "♥️ Love: Married at 32",
+    "content": "🧑‍🍼 FAMILY: have 1 kid\n⌚ LIFESPAN: 87 years",
+    "type": "day",
+    "hour": 13,
     "minutes": 0,
+    "image": "https://photos.lordeaglesoftware.com/palmistry/thumb/1.jpg",
+    "backgroundUrl": "",
+    "buttonContent": "View Now",
     "displayType": "FULL_SCREEN",
     "repeatTimes": 1,
-    "event": "monday_study"
+    "event": "palm_marriage_report"
+  },
+  {
+    "id": 202,
+    "title": "🌟 Decode Life via Palmistry",
+    "content": "I am a great believer in luck, and I find the harder I work, the more I have of it.",
+    "type": "day",
+    "hour": 14,
+    "minutes": 0,
+    "image": "https://photos.lordeaglesoftware.com/palmistry/thumb/2.jpg",
+    "backgroundUrl": "",
+    "buttonContent": "Bắt đầu",
+    "displayType": "FULL_SCREEN",
+    "repeatTimes": 1,
+    "event": "palm_luck_quote"
+  },
+  {
+    "id": 203,
+    "title": "You're Innocent, Loving, Intelligent",
+    "content": "Instant Palmistry Report, Love, Career, Health",
+    "type": "day",
+    "hour": 15,
+    "minutes": 0,
+    "image": "https://photos.lordeaglesoftware.com/palmistry/thumb/3.jpg",
+    "backgroundUrl": "",
+    "buttonContent": "Read Report",
+    "displayType": "FULL_SCREEN",
+    "repeatTimes": 1,
+    "event": "palm_instant_report"
+  },
+  {
+    "id": 204,
+    "title": "What is your true nature?",
+    "content": "Find out right now!",
+    "type": "day",
+    "hour": 17,
+    "minutes": 0,
+    "image": "https://photos.lordeaglesoftware.com/palmistry/thumb/4.jpg",
+    "backgroundUrl": "",
+    "buttonContent": "Find Out",
+    "displayType": "FULL_SCREEN",
+    "repeatTimes": 1,
+    "event": "palm_true_nature"
+  },
+  {
+    "id": 205,
+    "title": "Darkness cannot drive out darkness...",
+    "content": "Hate cannot drive out hate, only love can do that.",
+    "type": "day",
+    "hour": 18,
+    "minutes": 0,
+    "image": "",
+    "backgroundUrl": "https://example.com/bg_quote.png",
+    "buttonContent": "Read More",
+    "displayType": "NOTIFICATION_ONLY",
+    "repeatTimes": 1,
+    "event": "palm_love_quote"
   }
+
 ]
 ```
 
