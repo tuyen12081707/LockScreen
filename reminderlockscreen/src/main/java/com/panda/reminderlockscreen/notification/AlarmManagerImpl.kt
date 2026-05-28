@@ -67,12 +67,40 @@ class AlarmManagerImpl(private val context: Context) : AlarmSchedule {
 
             is Schedule.ScheduleDay -> {
                 val calendar = Calendar.getInstance()
-                calendar.set(Calendar.HOUR_OF_DAY, schedule.hour)
-                calendar.set(Calendar.MINUTE, schedule.minute)
-                calendar.set(Calendar.SECOND, 0)
-                alarmManager.setAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent
-                )
+
+                if (schedule.time > 0L) {
+                    calendar.timeInMillis = schedule.time
+                } else {
+                    calendar.set(Calendar.HOUR_OF_DAY, schedule.hour)
+                    calendar.set(Calendar.MINUTE, schedule.minute)
+                    calendar.set(Calendar.SECOND, 0)
+                    if (calendar.timeInMillis < System.currentTimeMillis()) {
+                        calendar.add(Calendar.DAY_OF_YEAR, 1) // Nhảy sang ngày mai nếu đã qua giờ
+                    }
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (alarmManager.canScheduleExactAlarms()) {
+                        alarmManager.setExactAndAllowWhileIdle(
+                            AlarmManager.RTC_WAKEUP,
+                            calendar.timeInMillis,
+                            pendingIntent
+                        )
+                    } else {
+                        alarmManager.set(
+                            AlarmManager.RTC_WAKEUP,
+                            calendar.timeInMillis,
+                            pendingIntent
+                        )
+                    }
+                } else {
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                }
+
                 Log.e(TAG, "ScheduleDay: ${calendar.timeInMillis.longToDateString("dd/MM/yy HH:mm")} ${schedule.hour} : ${schedule.minute}")
             }
 

@@ -16,8 +16,8 @@ android {
         applicationId = "com.panda.lockscreen"
         minSdk = 24
         targetSdk = 35
-        versionCode = 114
-        versionName = "1.1.4"
+        versionCode = 116
+        versionName = "1.1.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
