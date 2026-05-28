@@ -10,13 +10,12 @@ Hỗ trợ tương thích ngược với chuẩn JSON cũ (V1) và tích hợp t
 ### 1. Thêm vào `build.gradle.kts` của `:app`
 
 ```kotlin
-implementation("com.github.tuyen12081707:LockScreen:1.1.2")
+implementation("com.github.tuyen12081707:LockScreen:1.1.3")
 ```
 
 ### 2. Khai báo quyền bắt buộc trong `AndroidManifest.xml`
 
 ```xml
-<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
 <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 <uses-permission android:name="android.permission.WAKE_LOCK" />
