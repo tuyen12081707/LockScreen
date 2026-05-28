@@ -10,18 +10,15 @@ import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.panda.reminderlockscreen.R
 import com.panda.reminderlockscreen.model.LockScreen
-import com.panda.reminderlockscreen.notification.FullscreenReminderActivity
-import com.panda.reminderlockscreen.utils.Constants
 import com.panda.reminderlockscreen.utils.ReminderScheduler
 
-class MainActivity : AppCompatActivity() {
+class TestActivity : AppCompatActivity() {
 
     private var notificationLauncher: ActivityResultLauncher<String>? = null
     override fun onNewIntent(intent: Intent) {

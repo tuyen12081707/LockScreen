@@ -7,7 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.panda.reminderlockscreen.presentation.activity.MainActivity
+import com.panda.reminderlockscreen.presentation.activity.TestActivity
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -117,7 +117,7 @@ class FullscreenReminderActivity : AppCompatActivity() {
     }
 
     private fun openMainActivity(source: Int) {
-        val intent = Intent(this, MainActivity::class.java).apply {
+        val intent = Intent(this, TestActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra("isFromLockScreen", true)
         }

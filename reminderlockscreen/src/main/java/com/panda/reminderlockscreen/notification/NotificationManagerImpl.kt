@@ -15,7 +15,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.panda.reminderlockscreen.R
 import com.panda.reminderlockscreen.model.DisplayType
-import com.panda.reminderlockscreen.presentation.activity.MainActivity
+import com.panda.reminderlockscreen.presentation.activity.TestActivity
 
 
 interface INotification {
@@ -128,7 +128,7 @@ class NotificationManagerImpl(
 
 
     private fun getPendingIntentActivity(): PendingIntent {
-        val activityIntent = Intent(context, MainActivity::class.java).apply {
+        val activityIntent = Intent(context, TestActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }.apply {
             putExtra("open_from_notification", true)
