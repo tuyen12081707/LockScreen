@@ -53,25 +53,29 @@ Hỗ trợ quản lý tổng, giới hạn số lần bắn trong ngày và xoay
 ```json
 {
   "enabled": true,
-  "max_display_per_day": 5,
+  "max_display_per_day": 8,
   "repeat_interval_minutes": 60,
-  "target_hours": [13, 15, 19, 21],
+  "target_hours": [13, 14, 15, 17, 18, 19, 20, 21],
   "contents": [
     {
-      "id": 101,
-      "title": "Học Tiếng Anh Thôi!",
-      "content": "Mỗi ngày 5 từ vựng mới để nâng trình nhé.",
-      "image": "[https://example.com/img1.png](https://example.com/img1.png)",
-      "buttonContent": "Học ngay",
+      "id": 201,
+      "title": "♥️ Love: Married at 32",
+      "content": "🧑‍🍼 FAMILY: have 1 kid\n⌚ LIFESPAN: 87 years",
+      "image": "https://example.com/palm_love.png",
+      "backgroundUrl": "https://example.com/bg_love.png",
+      "buttonContent": "View Now",
       "displayType": "FULL_SCREEN",
-      "event": "lockscreen_study_eng"
+      "event": "palm_marriage_report"
     },
     {
-      "id": 102,
-      "title": "Uống nước đi bạn!",
-      "content": "Đã đến lúc bổ sung nước cho cơ thể.",
-      "displayType": "NOTIFICATION_ONLY",
-      "event": "notify_drink_water"
+      "id": 202,
+      "title": "🌟 Decode Life via Palmistry",
+      "content": "I am a great believer in luck, and I find the harder I work, the more I have of it.",
+      "image": "",
+      "backgroundUrl": "https://example.com/bg_luck.png",
+      "buttonContent": "Decode Now",
+      "displayType": "FULL_SCREEN",
+      "event": "palm_luck_quote"
     }
   ]
 }
