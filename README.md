@@ -10,7 +10,7 @@ Hỗ trợ tương thích ngược với chuẩn JSON cũ (V1) và tích hợp t
 ### 1. Thêm vào `build.gradle.kts` của `:app`
 
 ```kotlin
-implementation("com.github.tuyen12081707:LockScreen:1.1.8")
+implementation("com.github.tuyen12081707:LockScreen:1.1.9")
 ```
 
 ### 2. Khai báo quyền bắt buộc trong `AndroidManifest.xml`
@@ -107,6 +107,18 @@ Dành cho các chiến dịch cũ lặp lại theo tuần/tháng tĩnh.
 ```
 
 ---
+#### 📌 Giải nghĩa các trường dữ liệu (Cực kỳ quan trọng):
+
+| Trường | Kiểu dữ liệu | Mô tả & Cách dùng |
+|---|---|---|
+| **`type`** | `String` | Xác định loại báo thức. Hỗ trợ 5 loại: <br>• `"week"`: Lặp theo thứ trong tuần.<br>• `"month"`: Lặp theo ngày trong tháng.<br>• `"day"`: Báo thức 1 lần trong ngày.<br>• `"each_day"`: Báo thức lặp lại mỗi `X` ngày.<br>• `"remote"`: Báo thức linh hoạt (theo logic remote). |
+| **`day`** | `Int` | **Nếu `type` = "week":** <br>`1` = Chủ Nhật, `2` = Thứ 2, `3` = Thứ 3, ..., `7` = Thứ 7.<br>**Nếu `type` = "month":**<br>Từ `1` đến `31` (Ngày trong tháng). |
+| **`intervals`**| `Int` | Chỉ dùng khi `type` = `"each_day"` hoặc `"remote"`. <br>Đại diện cho số ngày giãn cách. Ví dụ: `intervals = 2` nghĩa là 2 ngày báo 1 lần. |
+| **`hour` / `minutes`**| `Int` | Giờ (0-23) và Phút (0-59) báo thức sẽ kêu. |
+| **`repeatTimes`** | `Int` | `1`: Lặp lại chu kỳ (mãi mãi).<br>`0`: Chỉ nhắc 1 lần duy nhất rồi tự hủy. |
+| **`event`** | `String` | Mã sự kiện (Event Code) được truyền ngược về App khi user bấm nút mở. Dùng để tracking Firebase hoặc điều hướng (DeepLink). |
+| `id` | `Int` | ID định danh độc nhất của báo thức (để update hoặc cancel sau này). |
+| `buttonContent`| `String` | Chữ hiển thị trên nút bấm (Ví dụ: "Mở app", "Làm bài", "Bắt đầu"). |
 
 ## 🎨 THUỘC TÍNH HIỂN THỊ (`displayType`)
 
@@ -149,6 +161,7 @@ private fun handleLockScreenEvent(intent: Intent?) {
         val eventName = intent.getStringExtra("event") ?: "unknown"
         // Ghi log lên Firebase Analytics
         // firebaseAnalytics.logEvent(eventName, null)
+        intent?.remove("")
     }
 }
 

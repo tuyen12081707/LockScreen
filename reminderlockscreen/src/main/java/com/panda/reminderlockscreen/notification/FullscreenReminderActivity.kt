@@ -124,7 +124,7 @@ class FullscreenReminderActivity : AppCompatActivity() {
         targetIntent?.let {
             it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             it.putExtra("isFromLockScreen", true)
-            it.putExtra("lockscreen_event", schedule?.event)
+            it.putExtra("event", schedule?.event)
 
             finish()
             startActivity(it)
