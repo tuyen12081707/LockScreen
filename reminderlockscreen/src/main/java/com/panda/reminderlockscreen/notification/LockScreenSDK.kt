@@ -37,7 +37,7 @@ object LockScreenSDK {
         }
 
         val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        prefs.edit().putString(KEY_TARGET_ACTIVITY, targetActivity.name).apply()
+        prefs.edit { putString(KEY_TARGET_ACTIVITY, targetActivity.name) }
 
         val jsonTrimmed = remoteConfigJson.trim()
 
@@ -317,4 +317,43 @@ object LockScreenSDK {
             Log.e(TAG, "Lỗi tạo Schedule V2: ${e.message}")
         }
     }
+    fun updateTargetActivity(context: Context, targetActivity: Class<*>) {
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        prefs.edit { putString(KEY_TARGET_ACTIVITY, targetActivity.name) }
+
+    }
+
+
+    fun addSchedule(context: Context, schedule: Schedule, targetActivity: Class<*>? = null) {
+        targetActivity?.let {
+            val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            prefs.edit { putString(KEY_TARGET_ACTIVITY, targetActivity.name) }
+        }
+        try {
+
+            val alarmManager = AlarmManagerImpl(context)
+            alarmManager.cancel(schedule)
+
+            alarmManager.schedule(schedule)
+
+            Log.d(
+                TAG,
+                "Đã ADD thành công Schedule Local: ID = ${schedule.id}, Title = ${schedule.title}"
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Lỗi khi add Schedule Local: ${e.message}")
+        }
+    }
+
+    fun cancelSchedule(context: Context, schedule: Schedule) {
+        try {
+            val alarmManager = AlarmManagerImpl(context)
+            alarmManager.cancel(schedule)
+            Log.d(TAG, "Đã HỦY Schedule Local: ID = ${schedule.id}")
+        } catch (e: Exception) {
+            Log.e(TAG, "Lỗi khi hủy Schedule Local: ${e.message}")
+        }
+    }
+
+
 }
