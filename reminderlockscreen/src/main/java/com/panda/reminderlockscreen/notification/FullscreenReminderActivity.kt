@@ -101,36 +101,39 @@ class FullscreenReminderActivity : AppCompatActivity() {
     }
 
     private fun openTargetActivity() {
-        // 1. Lấy Class name đã lưu lúc init
-        val prefs = getSharedPreferences("LockScreenSDK_Prefs", Context.MODE_PRIVATE)
-        val targetClassName = prefs.getString("TARGET_ACTIVITY_CLASS", null)
+        runCatching {
+            // 1. Lấy Class name đã lưu lúc init
+            val prefs = getSharedPreferences("LockScreenSDK_Prefs", Context.MODE_PRIVATE)
+            val targetClassName = prefs.getString("TARGET_ACTIVITY_CLASS", null)
 
-        var targetIntent: Intent? = null
+            var targetIntent: Intent? = null
 
-        if (!targetClassName.isNullOrBlank()) {
-            try {
-                val clazz = Class.forName(targetClassName)
-                targetIntent = Intent(this, clazz)
-            } catch (e: ClassNotFoundException) {
-                Log.e("FullscreenReminder", "Không tìm thấy Class: $targetClassName")
+            if (!targetClassName.isNullOrBlank()) {
+                try {
+                    val clazz = Class.forName(targetClassName)
+                    targetIntent = Intent(this, clazz)
+                } catch (e: ClassNotFoundException) {
+                    Log.e("FullscreenReminder", "Không tìm thấy Class: $targetClassName")
+                }
+            }
+
+            // Fallback: Tìm Launcher Activity nếu không có targetClass
+            if (targetIntent == null) {
+                targetIntent = packageManager.getLaunchIntentForPackage(packageName)
+            }
+
+            targetIntent?.let {
+                it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                it.putExtra("isFromLockScreen", true)
+                it.putExtra("event", schedule?.event)
+
+                finish()
+                startActivity(it)
+            } ?: run {
+                finishAffinity()
             }
         }
 
-        // Fallback: Tìm Launcher Activity nếu không có targetClass
-        if (targetIntent == null) {
-            targetIntent = packageManager.getLaunchIntentForPackage(packageName)
-        }
-
-        targetIntent?.let {
-            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            it.putExtra("isFromLockScreen", true)
-            it.putExtra("event", schedule?.event)
-
-            finish()
-            startActivity(it)
-        } ?: run {
-            finishAffinity()
-        }
     }
 
     override fun onDestroy() {
