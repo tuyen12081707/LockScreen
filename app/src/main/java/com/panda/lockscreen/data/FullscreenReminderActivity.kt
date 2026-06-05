@@ -1,6 +1,7 @@
 package com.panda.lockscreen.data
 
 import android.app.KeyguardManager
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -40,6 +41,11 @@ class FullscreenReminderActivity : AppCompatActivity() {
         binding = ActivityFullScreenReminderBinding.inflate(layoutInflater)
         setContentView(binding.root)
         Log.d("FullScreenReminderReceiver", "onCreate")
+        schedule?.let {
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+            notificationManager.cancel(it.id)
+            Log.d("FullScreenReminder", "Đã xóa Notification ID: ${it.id} để dọn đường cho lần lặp sau")
+        }
         handleNewIntent()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
