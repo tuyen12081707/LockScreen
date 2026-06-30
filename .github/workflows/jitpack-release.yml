@@ -1,0 +1,56 @@
+name: Auto Release to JitPack
+
+on:
+  push:
+    branches:
+      - main # (Hoặc master tùy nhánh chính của bạn)
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # CẤP QUYỀN CỰC QUAN TRỌNG để bot có thể tạo và push Tag
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Bắt buộc phải có để Github lấy lịch sử các Tag cũ
+
+      - name: Generate new tag and Push
+        id: tag_version
+        run: |
+          # 1. Lấy tag mới nhất, nếu project chưa có tag nào thì mặc định bắt đầu từ v1.0.0
+          LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1` 2>/dev/null || echo "v1.0.0")
+          echo "Tag hiện tại: $LATEST_TAG"
+          
+          # 2. Xóa chữ 'v' ở đầu (nếu có) để tách số
+          VERSION_WITHOUT_V=${LATEST_TAG#v}
+          VERSION_PARTS=(${VERSION_WITHOUT_V//./ })
+          
+          # 3. Tăng số Patch lên 1 (Ví dụ: 1.0.0 -> 1.0.1)
+          MAJOR=${VERSION_PARTS[0]}
+          MINOR=${VERSION_PARTS[1]}
+          PATCH=${VERSION_PARTS[2]}
+          NEW_PATCH=$((PATCH + 1))
+          
+          NEW_TAG="v$MAJOR.$MINOR.$NEW_PATCH"
+          echo "Tag mới sẽ tạo: $NEW_TAG"
+          
+          # 4. Đóng giả làm Bot của Github để push code
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 5. Tạo và đẩy Tag lên Github
+          git tag $NEW_TAG
+          git push origin $NEW_TAG
+          
+          # Lưu lại NEW_TAG vào biến môi trường để dùng ở step gọi API
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+
+      - name: Trigger JitPack Build
+        run: |
+          echo "Đang báo cho JitPack build bản $NEW_TAG..."
+          # Gọi API của JitPack dựa theo tên repo của bạn (VD: Panda/LockScreen)
+          curl -s -X GET https://jitpack.io/api/builds/com.github.${{ github.repository }}/${{ env.NEW_TAG }}
+          echo "Hoàn tất! Library của bạn đã lên kệ JitPack 🚀"

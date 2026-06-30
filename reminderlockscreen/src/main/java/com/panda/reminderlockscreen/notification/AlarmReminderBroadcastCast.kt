@@ -28,6 +28,7 @@ class AlarmReminderBroadcastCast : BroadcastReceiver() {
         } else {
             @Suppress("DEPRECATION")
             intent.getParcelableExtra("schedule_data")
+
         }
 
         if (schedule == null) {

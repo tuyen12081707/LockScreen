@@ -3,6 +3,7 @@ package com.panda.reminderlockscreen.notification
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -33,6 +34,11 @@ class FullscreenReminderActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFullScreenReminderBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        runCatching {
+            if (Build.VERSION.SDK_INT != Build.VERSION_CODES.O) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+        }
 
         updateScheduleFromIntent(intent)
         setupKeyguardAndWakeLock()
